@@ -1,10 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "gapbuffer.hpp"
 
 using namespace std;
 
-
 int main() {
+
+	GapBuffer gapBuffer;
+
+	gapBuffer.insert('c');
 
 
 	sf::RenderWindow window(sf::VideoMode({ 800, 800 }), "My Window");
@@ -16,7 +20,6 @@ int main() {
 	text.setString("Hello");
 	text.setCharacterSize(24);
 	text.setFillColor(sf::Color::White);
-
 
 	while (window.isOpen()) {
 		while (const std::optional event = window.pollEvent()) {
