@@ -9,10 +9,23 @@ int main() {
 	GapBuffer gapBuffer;
 
 	gapBuffer.insert('c');
+	gapBuffer.insert('a');
+	gapBuffer.insert('r');
+	gapBuffer.insert('t');
+	gapBuffer.insert('e');
+	gapBuffer.insert('r');
+	gapBuffer.insert('1');
+	gapBuffer.insert('2');
 
+	gapBuffer.move_gap(6);
+	gapBuffer.move_gap(0);
+
+	gapBuffer.print();
+
+	return 0;
 
 	sf::RenderWindow window(sf::VideoMode({ 800, 800 }), "My Window");
-	window.setPosition({50, 50});
+	window.setPosition({ 50, 50 });
 
 	sf::Font font("CONSOLA.TTF");
 	sf::Text text(font);
