@@ -32,16 +32,17 @@ target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/include)
 enable_testing()
 
 add_executable(
-  hello_test
-  tests/gapbuffer_test.cpp
-  tests/hello_test.cpp
+  buffer_test
+  tests/buffer_test.cpp
+  src/gapbuffer.cpp
 )
 target_link_libraries(
-  hello_test
+  buffer_test
   GTest::gtest_main
 )
+target_include_directories(buffer_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(buffer_test)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)

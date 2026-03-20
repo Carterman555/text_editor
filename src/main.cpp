@@ -20,7 +20,7 @@ int main() {
 	gapBuffer.move_gap(6);
 	gapBuffer.move_gap(0);
 
-	gapBuffer.print();
+	cout << gapBuffer.get_str();
 
 	return 0;
 

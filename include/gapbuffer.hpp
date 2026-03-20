@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 /**
  * @brief A gap buffer for efficient text editing.
@@ -8,7 +9,7 @@
  */
 class GapBuffer {
 public:
-    GapBuffer();
+    GapBuffer(int init_gap_size = 10);
 
     /**
      * @brief insert a character at the buffer
@@ -17,15 +18,19 @@ public:
     void insert(char c);
 
     /**
-     * @brief prints the buffer for debugging
-     */
-    void print();
-
-    /**
      * @brief move the buffer to the given index to begin inserting characters at that position
      * @param position the index to move the start of the buffer to
      */
     void move_gap(int position);
+
+
+    // Methods for Testing
+
+    /**
+     * @brief get the string of the buffer with the gap
+     */
+    std::string get_str();
+
 private:
     std::vector<char> buffer;
     int gap_left;
@@ -33,5 +38,5 @@ private:
 
     // the initial size of the vector and the size of the gap inserted each time the gap is filled
     // with characters
-    int init_gap_size = 10;
+    int init_gap_size;
 };
