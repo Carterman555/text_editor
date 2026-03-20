@@ -1,6 +1,7 @@
 #include <iostream>
 #include "gapbuffer.hpp"
 
+
 GapBuffer::GapBuffer(int init_gap_size) {
     this->init_gap_size = init_gap_size;
     buffer = std::vector<char>(init_gap_size, '\0');
@@ -35,10 +36,17 @@ void GapBuffer::move_gap(int position) {
 
     bool move_right = position > gap_left;
     if (move_right) {
-        int distance = position - gap_right;
+
+        int gap_size = (gap_right - gap_left) + 1;
 
         // move the character after the gap to before it
+        std::copy(buffer.begin() + gap_right + 1, buffer.begin() + position + gap_size, buffer.begin() + gap_left);
         
+        int chars_moved = (position + gap_size) - (gap_right + 1);
+        gap_left += chars_moved;
+        gap_right = gap_left + gap_size - 1;
+        
+        std::fill(buffer.begin() + gap_left, buffer.begin() + gap_right + 1, '\0');
     }
 }
 
