@@ -4,6 +4,7 @@ project(TextEditor LANGUAGES CXX)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -24,6 +25,7 @@ FetchContent_MakeAvailable(googletest)
 add_executable(main
     src/main.cpp
     src/gapbuffer.cpp
+    src/screen.cpp
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)

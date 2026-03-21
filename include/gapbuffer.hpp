@@ -12,22 +12,27 @@ public:
     GapBuffer(int init_gap_size = 10);
 
     /**
-     * @brief insert a character at the buffer
-     * @param c the character to insert
+     * @brief Insert a character at the buffer
+     * @param c The character to insert
+     * @param position Index to insert character at
      */
-    void insert(char c);
+    void insert(char c, int position);
 
     /**
-     * @brief move the buffer to the given index to begin inserting characters at that position
-     * @param position the index to move the start of the buffer to
+     * @brief Move the buffer to the given index to begin inserting characters at that position
+     * @param position The index to move the start of the buffer to
      */
     void move_gap(int position);
 
+    /**
+     * @brief Get the string of the buffer without the gap
+     */
+    std::string get_display_str();
 
     // Methods for Testing
 
     /**
-     * @brief get the string of the buffer with the gap
+     * @brief Get the string of the buffer with the gap
      */
     std::string get_str();
 

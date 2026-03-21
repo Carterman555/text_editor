@@ -6,19 +6,19 @@ TEST(BufferTest, BasicInsert) {
 
   GapBuffer buffer(5);
 
-  buffer.insert('a');
+  buffer.insert('a', 0);
   EXPECT_EQ(buffer.get_str(), "a____");
 
-  buffer.insert('p');
+  buffer.insert('p', 1);
   EXPECT_EQ(buffer.get_str(), "ap___");
 
-  buffer.insert('p');
-  buffer.insert('l');
-  buffer.insert('e');
+  buffer.insert('p', 2);
+  buffer.insert('l', 3);
+  buffer.insert('e', 4);
 
   EXPECT_EQ(buffer.get_str(), "apple");
 
-  buffer.insert('s');
+  buffer.insert('s', 5);
 
   EXPECT_EQ(buffer.get_str(), "apples____");
 }
@@ -27,14 +27,14 @@ TEST(BufferTest, MoveGap) {
 
   GapBuffer buffer(5);
 
-  buffer.insert('a');
+  buffer.insert('a', 1);
   buffer.move_gap(0);
   EXPECT_EQ(buffer.get_str(), "____a");
 
-  buffer.insert('b');
+  buffer.insert('b', 2);
   EXPECT_EQ(buffer.get_str(), "b___a");
 
-  buffer.insert('c');
+  buffer.insert('c', 3);
   buffer.move_gap(1);
   EXPECT_EQ(buffer.get_str(), "b__ca");
 

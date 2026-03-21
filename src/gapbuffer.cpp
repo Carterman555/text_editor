@@ -9,10 +9,14 @@ GapBuffer::GapBuffer(int init_gap_size) {
     gap_right = init_gap_size - 1;
 }
 
-void GapBuffer::insert(char c) {
+void GapBuffer::insert(char c, int position) {
     if (gap_left > gap_right) {
         buffer.insert(buffer.begin() + gap_left, init_gap_size, '\0');
         gap_right += init_gap_size;
+    }
+
+    if (gap_left != position) {
+        move_gap(position);
     }
 
     buffer.at(gap_left) = c;
@@ -48,6 +52,19 @@ void GapBuffer::move_gap(int position) {
         
         std::fill(buffer.begin() + gap_left, buffer.begin() + gap_right + 1, '\0');
     }
+}
+
+std::string GapBuffer::get_display_str() {
+
+    std::string str;
+
+    for (size_t i = 0; i < buffer.size(); i++) {
+        if (buffer.at(i) != '\0') {
+            str.push_back(buffer.at(i));
+        }
+    }
+
+    return str;
 }
 
 std::string GapBuffer::get_str() {

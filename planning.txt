@@ -28,9 +28,26 @@ https://www.geeksforgeeks.org/dsa/gap-buffer-data-structure/
 I got some help from the Design Philosophy book. It used the example of a text editor throughout the book.
 One suggestion it had was making the caret and selection box two different classes. I'll do that.
 
-I think it also suggested having a general class for manipulating the text not containing any specifics of the text editor. Like
-it's a class that can be used to manipulate text in a wide variety of programs.
-The class contains a delete method, which takes in a start and end position and deletes everything inbetween. If the end position
+I'll make the buffer class have a delete method, which takes in a start and end position and deletes everything inbetween. If the end position
 is equal to or less than the start position, it does not throw an exception, it just does nothing.
-The insert method takes a position and the character to input.
 
+I think I need a method to convert the screen position to character index and vice versa. I don't know which class this method should be in.
+It's also going to be harder than I thought because return keys make it uneven.
+There is a sfml method to get the screen position of a character index. That will be nice.
+
+Getting character from screen position.
+    First, get the line number of position using the number of returns. I could also do the math using character spacing to 
+    calculate the character in that line directly.
+
+Classes:
+
+
+SelectionBox
+
+clear()
+create(int start, int end)
+set_end(int pos)
+
+private:
+int start
+int end
