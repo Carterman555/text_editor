@@ -35,9 +35,6 @@ I think I need a method to convert the screen position to character index and vi
 It's also going to be harder than I thought because return keys make it uneven.
 There is a sfml method to get the screen position of a character index. That will be nice.
 
-Getting character from screen position.
-    First, get the line number of position using the number of returns. I could also do the math using character spacing to 
-    calculate the character in that line directly.
 
 Classes:
 
@@ -51,3 +48,5 @@ set_end(int pos)
 private:
 int start
 int end
+
+

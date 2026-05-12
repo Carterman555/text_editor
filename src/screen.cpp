@@ -3,21 +3,19 @@
 
 #include "screen.hpp"
 
-Screen::Screen() : buffer(), carot(sf::Vector2f(2, font_size)) {
+using namespace std;
 
-	sf::RenderWindow window(sf::VideoMode({ 800, 800 }), "My Window");
+Screen::Screen() : buffer(),
+font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
+text(font),
+carot(text, font_size),
+window(sf::VideoMode({ 800, 800 }), "Text Editor") {
+
 	window.setPosition({ 50, 50 });
-
-	std::string projectDir = PROJECT_DIR;
-
-	sf::Font font(projectDir + "/CONSOLA.TTF");
-	sf::Text text(font);
 
 	text.setString("");
 	text.setCharacterSize(font_size);
 	text.setFillColor(sf::Color::White);
-
-	carot.setPosition(sf::Vector2f(0, 4));
 
 	while (window.isOpen()) {
 		while (const std::optional event = window.pollEvent()) {
@@ -25,53 +23,16 @@ Screen::Screen() : buffer(), carot(sf::Vector2f(2, font_size)) {
 				window.close();
 			}
 			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-				if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
-					window.close();
-				}
-				else if (keyPressed->scancode == sf::Keyboard::Scancode::Left) {
-					carot_pos--;
-					if (carot_pos < 0) {
-						carot_pos = 0;
-					}
-					buffer.move_gap(carot_pos);
-
-					update_carot_pos(text);
-				}
-				else if (keyPressed->scancode == sf::Keyboard::Scancode::Right) {
-					carot_pos++;
-					int char_count = text.getString().getSize();
-					if (carot_pos > char_count) {
-						carot_pos = char_count;
-					}
-					buffer.move_gap(carot_pos);
-
-					update_carot_pos(text);
-				}
+				on_key_pressed(keyPressed->scancode);
 			}
 			else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-
-				if (textEntered->unicode < 128) {
-					char c = static_cast<char>(textEntered->unicode);
-
-					const int return_unicode = 13;
-					if (textEntered->unicode == return_unicode) {
-						c = '\n';
-					}
-
-					buffer.insert(c, carot_pos);
-					carot_pos++;
-
-					text.setString(buffer.get_display_str());
-
-					update_carot_pos(text);
-				}
+				type_char(textEntered->unicode);
 			}
 			else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
 				if (mouseData->button == sf::Mouse::Button::Left) {
-					carot_pos = pos_to_char_index(mouseData->position);
-
-					buffer.move_gap(carot_pos);
-					update_carot_pos(text);
+					int desired_carot_pos = pos_to_char_index(mouseData->position);
+					carot.move(desired_carot_pos);
+					buffer.move_gap(carot.get_pos());
 				}
 			}
 		}
@@ -79,7 +40,7 @@ Screen::Screen() : buffer(), carot(sf::Vector2f(2, font_size)) {
 		window.clear(sf::Color(25, 25, 25));
 
 		window.draw(text);
-		window.draw(carot);
+		window.draw(carot.get_shape());
 
 		window.display();
 	}
@@ -88,6 +49,40 @@ Screen::Screen() : buffer(), carot(sf::Vector2f(2, font_size)) {
 Screen::~Screen() {
 }
 
+void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
+	if (scancode == sf::Keyboard::Scancode::Escape) {
+		window.close();
+	}
+	else if (scancode == sf::Keyboard::Scancode::Left) {
+		carot.move_left();
+    	buffer.move_gap(carot.get_pos());
+	}
+	else if (scancode == sf::Keyboard::Scancode::Right) {
+		carot.move_right();
+		buffer.move_gap(carot.get_pos());
+	}
+	else if (scancode == sf::Keyboard::Scancode::Down) {
+		carot.move_down();
+		buffer.move_gap(carot.get_pos());
+	}
+}
+
+void Screen::type_char(int unicode) {
+	if (unicode < 128) {
+		char c = static_cast<char>(unicode);
+
+		const int return_unicode = 13;
+		if (unicode == return_unicode) {
+			c = '\n';
+		}
+
+		buffer.insert(c, carot.get_pos());
+
+		text.setString(buffer.get_display_str());
+
+		carot.move_right();
+	}
+}
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
@@ -144,9 +139,4 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	}
 
 	return line_start_index + char_index_in_line;
-}
-
-void Screen::update_carot_pos(sf::Text text) {
-	sf::Vector2f offset = sf::Vector2f(0, 4);
-	carot.setPosition(text.findCharacterPos(carot_pos) + offset);
 }
