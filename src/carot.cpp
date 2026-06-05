@@ -12,8 +12,6 @@ void Carot::move(int pos) {
 
     horizontal_pos = 0;
     update_shape_pos();
-
-    return;
 }
 
 void Carot::move_left() {
@@ -25,8 +23,6 @@ void Carot::move_left() {
 
     horizontal_pos = 0;
     update_shape_pos();
-
-    return;
 }
 
 void Carot::move_right() {
@@ -38,8 +34,6 @@ void Carot::move_right() {
 
     horizontal_pos = 0;
     update_shape_pos();
-
-    return;
 }
 
 void Carot::move_down() {
@@ -87,6 +81,4 @@ void Carot::move_down() {
     }
 
     update_shape_pos();
-
-    return;
 }

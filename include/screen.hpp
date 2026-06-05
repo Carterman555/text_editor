@@ -10,12 +10,12 @@ private:
     int font_size = 24;
     int char_width = 13;
 
+    sf::Font font;
+    sf::Text text;
+
     Carot carot;
 
     sf::RenderWindow window;
-
-    sf::Font font;
-    sf::Text text;
 
 public:
     Screen();

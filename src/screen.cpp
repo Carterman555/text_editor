@@ -86,7 +86,7 @@ void Screen::type_char(int unicode) {
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
-	// Step 1: get the line number, the start index of that line, and the size of the line
+	// Step 1: Get the line number, the start index of that line, and the size of the line
 
 	int line_spacing_pixels = 4; // changes depending on the font I think
 	int line_number = ceil((float)screen_pos.y / (font_size + line_spacing_pixels));

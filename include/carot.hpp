@@ -15,7 +15,7 @@ private:
     // the original horizontal position.
     int horizontal_pos = 0;
 
-    sf::Text text;
+    const sf::Text& text;
 
 public:
 
