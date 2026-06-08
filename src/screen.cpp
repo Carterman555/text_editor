@@ -18,6 +18,9 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 	text.setFillColor(sf::Color::White);
 
 	while (window.isOpen()) {
+
+		cout << "str length: " << text.getString().getSize() << ", pos: " << carot.get_pos() << endl;
+
 		while (const std::optional event = window.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				window.close();
@@ -55,7 +58,7 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 	}
 	else if (scancode == sf::Keyboard::Scancode::Left) {
 		carot.move_left();
-    	buffer.move_gap(carot.get_pos());
+		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Right) {
 		carot.move_right();
@@ -63,6 +66,10 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 	}
 	else if (scancode == sf::Keyboard::Scancode::Down) {
 		carot.move_down();
+		buffer.move_gap(carot.get_pos());
+	}
+	else if (scancode == sf::Keyboard::Scancode::Up) {
+		carot.move_up();
 		buffer.move_gap(carot.get_pos());
 	}
 }
