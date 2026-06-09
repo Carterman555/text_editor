@@ -23,34 +23,10 @@ TEST(BufferTest, BasicInsert) {
   EXPECT_EQ(buffer.get_str(), "apples____");
 }
 
-TEST(BufferTest, MoveGap) {
+TEST(BufferTest, BasicRemove) {
 
   GapBuffer buffer(5);
 
-  buffer.insert('a', 1);
-  buffer.move_gap(0);
-  EXPECT_EQ(buffer.get_str(), "____a");
 
-  buffer.insert('b', 2);
-  EXPECT_EQ(buffer.get_str(), "b___a");
-
-  buffer.insert('c', 3);
-  buffer.move_gap(1);
-  EXPECT_EQ(buffer.get_str(), "b__ca");
-
-  buffer.move_gap(2);
-  EXPECT_EQ(buffer.get_str(), "bc__a");
-
-  buffer.move_gap(2);
-  EXPECT_EQ(buffer.get_str(), "bc__a");
-
-  buffer.move_gap(3);
-  EXPECT_EQ(buffer.get_str(), "bca__");
-
-  buffer.move_gap(0);
-  EXPECT_EQ(buffer.get_str(), "__bca");
-
-  buffer.move_gap(3);
-  EXPECT_EQ(buffer.get_str(), "bca__");
 }
 

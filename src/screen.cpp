@@ -19,8 +19,6 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 
 	while (window.isOpen()) {
 
-		cout << "str length: " << text.getString().getSize() << ", pos: " << carot.get_pos() << endl;
-
 		while (const std::optional event = window.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				window.close();
@@ -75,7 +73,31 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 }
 
 void Screen::type_char(int unicode) {
-	if (unicode < 128) {
+
+	const int backspace_unicode = 8;
+	const int delete_unicode = 127;
+
+	if (unicode == backspace_unicode) {
+
+		if (carot.get_pos() <= 0) {
+			return;
+		}
+
+		buffer.remove(carot.get_pos());
+
+		text.setString(buffer.get_display_str());
+		carot.move_left();
+	}
+	else if (unicode == delete_unicode) {
+		if (carot.get_pos() >= text.getString().getSize()) {
+			return;
+		}
+
+		buffer.remove(carot.get_pos() + 1);
+
+		text.setString(buffer.get_display_str());
+	}
+	else if (unicode < 128) {
 		char c = static_cast<char>(unicode);
 
 		const int return_unicode = 13;
@@ -86,7 +108,6 @@ void Screen::type_char(int unicode) {
 		buffer.insert(c, carot.get_pos());
 
 		text.setString(buffer.get_display_str());
-
 		carot.move_right();
 	}
 }

@@ -9,14 +9,20 @@
  */
 class GapBuffer {
 public:
-    GapBuffer(int init_gap_size = 10);
+    GapBuffer(int init_gap_size = 20);
 
     /**
-     * @brief Insert a character at the buffer
+     * @brief Insert a character at the position
      * @param c The character to insert
      * @param position Index to insert character at
      */
     void insert(char c, int position);
+
+    /**
+     * @brief Remove a character at the position
+     * @param position Index of character to remove
+     */
+    void remove(int position);
 
     /**
      * @brief Move the buffer to the given index to begin inserting characters at that position

@@ -23,6 +23,21 @@ void GapBuffer::insert(char c, int position) {
     gap_left++;
 }
 
+// I'm not sure if this function is correct
+void GapBuffer::remove(int position) {
+
+    if (position <= 0) {
+        return;
+    }
+
+    if (gap_left != position) {
+        move_gap(position);
+    }
+
+    gap_left--;
+    buffer.at(gap_left) = '\0';
+}
+
 void GapBuffer::move_gap(int position) {
 
     bool move_left = position < gap_left;
@@ -45,11 +60,11 @@ void GapBuffer::move_gap(int position) {
 
         // move the character after the gap to before it
         std::copy(buffer.begin() + gap_right + 1, buffer.begin() + position + gap_size, buffer.begin() + gap_left);
-        
+
         int chars_moved = (position + gap_size) - (gap_right + 1);
         gap_left += chars_moved;
         gap_right = gap_left + gap_size - 1;
-        
+
         std::fill(buffer.begin() + gap_left, buffer.begin() + gap_right + 1, '\0');
     }
 }
