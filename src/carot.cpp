@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Carot::Carot(const sf::Text& text, int font_size) : shape(sf::Vector2f(2, font_size)), text(text) {
-    shape.setPosition(carot_offset);
+Carot::Carot(const sf::Text& text) : shape(sf::Vector2f(2, FONT_SIZE)), text(text) {
+    shape.setPosition(TEXT_SHAPE_OFFSET);
 }
 
 void Carot::move(int pos) {

@@ -1,22 +1,12 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
 
 #include "gapbuffer.hpp"
 #include "carot.hpp"
+#include "selectionbox.hpp"
 
 class Screen {
-private:
-    GapBuffer buffer;
-
-    int font_size = 24;
-    int char_width = 13;
-
-    sf::Font font;
-    sf::Text text;
-
-    Carot carot;
-
-    sf::RenderWindow window;
-
 public:
     Screen();
     ~Screen();
@@ -29,4 +19,16 @@ public:
     void on_key_pressed(sf::Keyboard::Scancode scancode);
 
     void type_char(int unicode);
+
+private:
+    GapBuffer buffer;
+
+    sf::Font font;
+    sf::Text text;
+
+    Carot carot;
+
+    SelectionBox selection_box;
+
+    sf::RenderWindow window;
 };

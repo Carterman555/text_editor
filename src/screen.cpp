@@ -2,19 +2,22 @@
 #include <bits/stdc++.h>
 
 #include "screen.hpp"
+#include "constants.hpp"
 
 using namespace std;
+using namespace Constants;
 
 Screen::Screen() : buffer(),
 font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
 text(font),
-carot(text, font_size),
+carot(text),
+selection_box(text),
 window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 
 	window.setPosition({ 50, 50 });
 
 	text.setString("");
-	text.setCharacterSize(font_size);
+	text.setCharacterSize(FONT_SIZE);
 	text.setFillColor(sf::Color::White);
 
 	while (window.isOpen()) {
@@ -42,6 +45,7 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 
 		window.draw(text);
 		window.draw(carot.get_shape());
+		window.draw(selection_box.get_shape());
 
 		window.display();
 	}
@@ -69,6 +73,9 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 	else if (scancode == sf::Keyboard::Scancode::Up) {
 		carot.move_up();
 		buffer.move_gap(carot.get_pos());
+	}
+	else if (scancode == sf::Keyboard::Scancode::Tab) {
+		selection_box.create(3, 6);
 	}
 }
 
@@ -117,7 +124,7 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	// Step 1: Get the line number, the start index of that line, and the size of the line
 
 	int line_spacing_pixels = 4; // changes depending on the font I think
-	int line_number = ceil((float)screen_pos.y / (font_size + line_spacing_pixels));
+	int line_number = ceil((float)screen_pos.y / (FONT_SIZE + line_spacing_pixels));
 
 	if (line_number < 1) {
 		line_number = 1;
@@ -160,7 +167,7 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	// calculate the index
 
 	//... 0 for the first char of each line, 1 for the second, and so on
-	int char_index_in_line = round(((float)screen_pos.x) / char_width);
+	int char_index_in_line = round(((float)screen_pos.x) / CHARACTER_WIDTH);
 
 	if (char_index_in_line > chars_in_line) {
 		char_index_in_line = chars_in_line;

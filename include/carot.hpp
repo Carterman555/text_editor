@@ -1,4 +1,9 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
+#include "constants.hpp"
+
+using namespace Constants;
 
 /**
  * @brief Handles the movement and display of the carot
@@ -6,20 +11,10 @@
  * The carot is the small vertical line where text is written.
  */
 class Carot {
-private:
-    sf::RectangleShape shape;
-    sf::Vector2f carot_offset = sf::Vector2f(0, 4);
-    int pos = 0;
-
-    // When you press the up or down arrow, the carot moves up or down. This variable saves
-    // the original horizontal position.
-    int horizontal_pos = 0;
-
-    const sf::Text& text;
 
 public:
 
-    Carot(const sf::Text& text, int font_size);
+    Carot(const sf::Text& text);
 
     /**
      * @brief Move the carot to the given position
@@ -64,7 +59,7 @@ public:
      * Invoke when the carot position changes
      */
     void update_shape_pos() {
-        shape.setPosition(text.findCharacterPos(pos) + carot_offset);
+        shape.setPosition(text.findCharacterPos(pos) + TEXT_SHAPE_OFFSET);
     }
 
     int get_pos() {
@@ -74,4 +69,14 @@ public:
     sf::RectangleShape get_shape() {
         return shape;
     }
+
+private:
+    sf::RectangleShape shape;
+    int pos = 0;
+
+    // When you press the up or down arrow, the carot moves up or down. This variable saves
+    // the original horizontal position.
+    int horizontal_pos = 0;
+
+    const sf::Text& text;
 };

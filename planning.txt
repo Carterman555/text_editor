@@ -1,14 +1,6 @@
 
 
-Ok, so I want to think of 2-3 designs before starting to implement.
-
-It actually probably won't be desinct designs but more messy combination of different possible designs for different classes or
-groups of classes.
-
 Features I'm going to start with:
-- Typing where caret is
-- Clicking on the text changes the caret position
-- Backspace and delete (deleting one character)
 - selection
     - The mouse dragging over text selects it
     - The mouse clicking removes the selection
@@ -19,34 +11,9 @@ Features I'm going to start with:
 - either horizontal scrolling or line wrapping
 - reading from and writing to a file
 
-Designs 1:
-I want to build a gap buffer data structure in a class because it's the simplest data structure to use besides an array.
-It will be a generic one containing no specifics of the project.
-
-https://www.geeksforgeeks.org/dsa/gap-buffer-data-structure/
-
-I got some help from the Design Philosophy book. It used the example of a text editor throughout the book.
-One suggestion it had was making the caret and selection box two different classes. I'll do that.
-
-I'll make the buffer class have a delete method, which takes in a start and end position and deletes everything inbetween. If the end position
-is equal to or less than the start position, it does not throw an exception, it just does nothing.
-
-I think I need a method to convert the screen position to character index and vice versa. I don't know which class this method should be in.
-It's also going to be harder than I thought because return keys make it uneven.
-There is a sfml method to get the screen position of a character index. That will be nice.
-
 
 Classes:
 
 
-SelectionBox
-
-clear()
-create(int start, int end)
-set_end(int pos)
-
-private:
-int start
-int end
 
 
