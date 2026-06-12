@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bits/stdc++.h>
+#include <vector>
 #include <SFML/Graphics.hpp>
 
 /**
@@ -14,7 +16,7 @@ public:
      * @brief Creates the selection with a start and end positions
      * @param start The character index of the side of the selection without the carot
      * @param end The character index of the side of the selection with the carot
-     * 
+     *
      * start can be greater than end
      */
     void create(int start, int end);
@@ -30,18 +32,38 @@ public:
      */
     void clear();
 
-    sf::RectangleShape get_shape() {
-        return shape;
+    void draw(sf::RenderWindow& window) {
+        for (int i = 0; i < shapes.size(); i++) {
+            window.draw(*shapes.at(i));
+        }
+    }
+
+    int get_first() {
+        return std::min(start, end);
+    }
+
+    int get_last() {
+        return std::max(start, end);
+    }
+
+    int is_reversed() {
+        return start > end;
     }
 
 private:
+
     // The character index of the side of the selection without the carot
-    int start;
+    int start = -1;
 
     // The character index of the side of the selection with the carot
-    int end;
+    int end = -1;
 
-    sf::RectangleShape shape;
+    std::vector<std::unique_ptr<sf::RectangleShape>> shapes;
 
     const sf::Text& text;
+
+    /**
+     * @brief Create and arrange the box selection rectangle shapes
+     */
+    void setup_shapes();
 };

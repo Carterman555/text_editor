@@ -43,9 +43,9 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 
 		window.clear(sf::Color(25, 25, 25));
 
+		selection_box.draw(window);
 		window.draw(text);
-		window.draw(carot.get_shape());
-		window.draw(selection_box.get_shape());
+		carot.draw(window);
 
 		window.display();
 	}
@@ -74,8 +74,8 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 		carot.move_up();
 		buffer.move_gap(carot.get_pos());
 	}
-	else if (scancode == sf::Keyboard::Scancode::Tab) {
-		selection_box.create(3, 6);
+	else if (scancode == sf::Keyboard::Scancode::LShift) {
+		selection_box.create(2, 8);
 	}
 }
 

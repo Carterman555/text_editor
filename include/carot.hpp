@@ -66,8 +66,8 @@ public:
         return pos;
     }
 
-    sf::RectangleShape get_shape() {
-        return shape;
+    void draw(sf::RenderWindow& window) {
+        window.draw(shape);
     }
 
 private:
