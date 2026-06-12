@@ -29,6 +29,7 @@ private:
     Carot carot;
 
     SelectionBox selection_box;
+    int selection_start_index;
 
     sf::RenderWindow window;
 };

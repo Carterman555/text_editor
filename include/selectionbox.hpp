@@ -50,6 +50,10 @@ public:
         return start > end;
     }
 
+    bool is_active() {
+        return start != -1 && end != -1;
+    }
+
 private:
 
     // The character index of the side of the selection without the carot

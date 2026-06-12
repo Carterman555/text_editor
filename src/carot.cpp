@@ -9,9 +9,14 @@ Carot::Carot(const sf::Text& text) : shape(sf::Vector2f(2, FONT_SIZE)), text(tex
 
 void Carot::move(int pos) {
 
+    horizontal_pos = 0;
+
+    if (this->pos == pos) {
+        return;
+    }
+
     this->pos = pos;
 
-    horizontal_pos = 0;
     update_shape_pos();
 }
 

@@ -32,11 +32,25 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 			else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
 				type_char(textEntered->unicode);
 			}
+			else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+					int desired_carot_pos = pos_to_char_index(mouseData->position);
+					carot.move(desired_carot_pos);
+					buffer.move_gap(carot.get_pos());
+
+					selection_box.clear();
+					selection_box.create(selection_start_index, carot.get_pos());
+				}
+			}
 			else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
 				if (mouseData->button == sf::Mouse::Button::Left) {
 					int desired_carot_pos = pos_to_char_index(mouseData->position);
 					carot.move(desired_carot_pos);
 					buffer.move_gap(carot.get_pos());
+
+					selection_start_index = pos_to_char_index(mouseData->position);
+
+					selection_box.clear();
 				}
 			}
 		}
@@ -59,19 +73,48 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 		window.close();
 	}
 	else if (scancode == sf::Keyboard::Scancode::Left) {
-		carot.move_left();
+		if (!selection_box.is_active()) {
+			carot.move_left();
+		}
+		else {
+			carot.move(selection_box.get_first());
+			selection_box.clear();
+		}
+
 		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Right) {
-		carot.move_right();
+		if (!selection_box.is_active()) {
+			carot.move_right();
+		}
+		else {
+			carot.move(selection_box.get_last());
+			selection_box.clear();
+		}
+
 		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Down) {
-		carot.move_down();
+		if (!selection_box.is_active()) {
+			carot.move_down();
+		}
+		else {
+			carot.move(selection_box.get_last());
+			carot.move_down();
+			selection_box.clear();
+		}
+
 		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Up) {
-		carot.move_up();
+		if (!selection_box.is_active()) {
+			carot.move_up();
+		}
+		else {
+			carot.move(selection_box.get_first());
+			carot.move_up();
+			selection_box.clear();
+		}
 		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::LShift) {

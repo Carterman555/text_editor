@@ -6,7 +6,7 @@ Features I'm going to start with:
     - The mouse clicking removes the selection
     - Typing when text is selected deletes the text
     - Backspace and delete delete the text
-- line numbers
+- carot blinking
 - vertical scrolling
 - either horizontal scrolling or line wrapping
 - reading from and writing to a file
