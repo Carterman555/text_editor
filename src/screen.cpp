@@ -36,7 +36,6 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 					int desired_carot_pos = pos_to_char_index(mouseData->position);
 					carot.move(desired_carot_pos);
-					buffer.move_gap(carot.get_pos());
 
 					selection_box.clear();
 					selection_box.create(selection_start_index, carot.get_pos());
@@ -46,7 +45,6 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 				if (mouseData->button == sf::Mouse::Button::Left) {
 					int desired_carot_pos = pos_to_char_index(mouseData->position);
 					carot.move(desired_carot_pos);
-					buffer.move_gap(carot.get_pos());
 
 					selection_start_index = pos_to_char_index(mouseData->position);
 
@@ -69,8 +67,32 @@ Screen::~Screen() {
 }
 
 void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
+
+	bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RShift);
+
 	if (scancode == sf::Keyboard::Scancode::Escape) {
 		window.close();
+	}
+	else if (shift && scancode == sf::Keyboard::Scancode::Left) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
+		carot.move_left();
+		selection_box.create(selection_start, carot.get_pos());
+	}
+	else if (shift && scancode == sf::Keyboard::Scancode::Right) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
+		carot.move_right();
+		selection_box.create(selection_start, carot.get_pos());
+	}
+	else if (shift && scancode == sf::Keyboard::Scancode::Up) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
+		carot.move_up();
+		selection_box.create(selection_start, carot.get_pos());
+	}
+	else if (shift && scancode == sf::Keyboard::Scancode::Down) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
+		carot.move_down();
+		selection_box.create(selection_start, carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Left) {
 		if (!selection_box.is_active()) {
@@ -80,8 +102,6 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 			carot.move(selection_box.get_first());
 			selection_box.clear();
 		}
-
-		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Right) {
 		if (!selection_box.is_active()) {
@@ -91,8 +111,6 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 			carot.move(selection_box.get_last());
 			selection_box.clear();
 		}
-
-		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Down) {
 		if (!selection_box.is_active()) {
@@ -103,8 +121,6 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 			carot.move_down();
 			selection_box.clear();
 		}
-
-		buffer.move_gap(carot.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Up) {
 		if (!selection_box.is_active()) {
@@ -115,10 +131,6 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 			carot.move_up();
 			selection_box.clear();
 		}
-		buffer.move_gap(carot.get_pos());
-	}
-	else if (scancode == sf::Keyboard::Scancode::LShift) {
-		selection_box.create(2, 8);
 	}
 }
 
@@ -128,6 +140,11 @@ void Screen::type_char(int unicode) {
 	const int delete_unicode = 127;
 
 	if (unicode == backspace_unicode) {
+
+		if (selection_box.is_active()) {
+			delete_selection();
+			return;
+		}
 
 		if (carot.get_pos() <= 0) {
 			return;
@@ -139,6 +156,12 @@ void Screen::type_char(int unicode) {
 		carot.move_left();
 	}
 	else if (unicode == delete_unicode) {
+
+		if (selection_box.is_active()) {
+			delete_selection();
+			return;
+		}
+
 		if (carot.get_pos() >= text.getString().getSize()) {
 			return;
 		}
@@ -155,11 +178,30 @@ void Screen::type_char(int unicode) {
 			c = '\n';
 		}
 
+		if (selection_box.is_active()) {
+			delete_selection();
+		}
+
 		buffer.insert(c, carot.get_pos());
 
 		text.setString(buffer.get_display_str());
 		carot.move_right();
 	}
+}
+
+void Screen::delete_selection() {
+
+	carot.move(selection_box.get_first());
+
+	// repeatedly remove the first character in the selection from the buffer. Since the element is
+	// removed, each loop iteration removes the next character in order.
+	int selection_length = selection_box.get_last() - selection_box.get_first();
+	for (int i = 0; i < selection_length; i++) {
+		buffer.remove(selection_box.get_first() + 1);
+	}
+	selection_box.clear();
+
+	text.setString(buffer.get_display_str());
 }
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {

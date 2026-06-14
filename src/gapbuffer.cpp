@@ -23,7 +23,6 @@ void GapBuffer::insert(char c, int position) {
     gap_left++;
 }
 
-// I'm not sure if this function is correct
 void GapBuffer::remove(int position) {
 
     if (position <= 0) {

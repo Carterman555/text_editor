@@ -38,6 +38,14 @@ public:
         }
     }
 
+    int get_start() {
+        return start;
+    }
+
+    int get_end() {
+        return end;
+    }
+
     int get_first() {
         return std::min(start, end);
     }
@@ -71,3 +79,7 @@ private:
      */
     void setup_shapes();
 };
+
+
+
+

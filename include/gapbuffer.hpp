@@ -26,12 +26,6 @@ public:
     void remove(int position);
 
     /**
-     * @brief Move the buffer to the given index to begin inserting characters at that position
-     * @param position The index to move the start of the buffer to
-     */
-    void move_gap(int position);
-
-    /**
      * @brief Get the string of the buffer without the gap
      */
     std::string get_display_str();
@@ -51,4 +45,10 @@ private:
     // the initial size of the vector and the size of the gap inserted each time the gap is filled
     // with characters
     int init_gap_size;
+
+    /**
+     * @brief Move the buffer to the given index to begin inserting characters at that position
+     * @param position The index to move the start of the buffer to
+     */
+    void move_gap(int position);
 };
