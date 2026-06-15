@@ -12,9 +12,12 @@ font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
 text(font),
 carot(text),
 selection_box(text),
-window(sf::VideoMode({ 800, 800 }), "Text Editor") {
+window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
+view_handler(window) {
 
 	window.setPosition({ 50, 50 });
+
+	
 
 	text.setString("");
 	text.setCharacterSize(FONT_SIZE);
@@ -25,6 +28,9 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 		while (const std::optional event = window.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				window.close();
+			}
+			else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
+				view_handler.handle_window_resize(resized->size);
 			}
 			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
 				on_key_pressed(keyPressed->scancode);
@@ -51,7 +57,12 @@ window(sf::VideoMode({ 800, 800 }), "Text Editor") {
 					selection_box.clear();
 				}
 			}
+			else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
+				view_handler.scroll_vertically(mouseData->delta);
+			}
 		}
+
+		carot.update();
 
 		window.clear(sf::Color(25, 25, 25));
 
@@ -206,10 +217,12 @@ void Screen::delete_selection() {
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
+	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos);
+
 	// Step 1: Get the line number, the start index of that line, and the size of the line
 
 	int line_spacing_pixels = 4; // changes depending on the font I think
-	int line_number = ceil((float)screen_pos.y / (FONT_SIZE + line_spacing_pixels));
+	int line_number = ceil((float)world_pos.y / (FONT_SIZE + line_spacing_pixels));
 
 	if (line_number < 1) {
 		line_number = 1;
@@ -252,7 +265,7 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	// calculate the index
 
 	//... 0 for the first char of each line, 1 for the second, and so on
-	int char_index_in_line = round(((float)screen_pos.x) / CHARACTER_WIDTH);
+	int char_index_in_line = round(((float)world_pos.x) / CHARACTER_WIDTH);
 
 	if (char_index_in_line > chars_in_line) {
 		char_index_in_line = chars_in_line;

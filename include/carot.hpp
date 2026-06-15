@@ -54,20 +54,31 @@ public:
 
 
     /**
-     * @brief Update the position of the carot shape on the screen
+     * @brief Update the position of the carot shape on the screen and reset the blink.
      *
-     * Invoke when the carot position changes
+     * Invoke when the carot position changes.
      */
     void update_shape_pos() {
         shape.setPosition(text.findCharacterPos(pos) + TEXT_SHAPE_OFFSET);
+        set_visibility(true);
     }
 
     int get_pos() {
         return pos;
     }
 
+    void update();
+
     void draw(sf::RenderWindow& window) {
-        window.draw(shape);
+        if (visible) {
+            window.draw(shape);
+        }
+    }
+
+    // Set visibility for the blink, and restarts the clock responsible for controlling blink
+    void set_visibility(bool visible) {
+        this->visible = visible;
+        clock.restart();
     }
 
 private:
@@ -79,4 +90,13 @@ private:
     int horizontal_pos = 0;
 
     const sf::Text& text;
+
+    // Indicates when the cursor is in the visible duration of the blinking. This varible
+    // only has to do with blinking.
+    bool visible = true;
+    sf::Clock clock;
+
+    // Duration of blink in seconds. Not the full duration of visible and not visible. Just the
+    // duration of one state.
+    const float blink_duration = 0.5;
 };

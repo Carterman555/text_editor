@@ -1,16 +1,32 @@
 
 
 Features I'm going to start with:
-- carot blinking
 - vertical scrolling
+    - scroll from mouse wheel
+    - scroll bar
+    - scroll from moving carot
 - either horizontal scrolling or line wrapping
+    - scroll bar
+    - scroll from moving carot
+- zoom in and out
 - reading from and writing to a file
+
+
+How do I want to design for scrolling. Do I create a scroll class which handles both vertical and
+horizontal scrolling? Or just a scroll bar class? Or two scroll classes? Or two scroll classes?
+Maybe I just include it all in the screen class. Maybe I make it in the screen class then that will
+give me a better idea of how I want to design it and I can refactor it. I think it's better to try to
+think about how I want to design it now, then refactor if I think it's better.
+After thinking about it, I think it makes the most sense to not create any new classes for now.
+
+Actually I'm going to have a scroll class. But I don't know if I also want it to handle zooming as well.
+It feels like it should because they are connected and require the same data and handling one requires
+information about the other. So it will be a view handler class.
 
 
 Classes:
 
 
 Changes since last commit:
-
-- selection delete
-- select with shift + arrow keys
+- carot blink
+- prevent stretching when resizing window

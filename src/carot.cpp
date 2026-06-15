@@ -146,3 +146,10 @@ void Carot::move_up() {
 
     update_shape_pos();
 }
+
+void Carot::update() {
+    sf::Time time = clock.getElapsedTime();
+    if (time.asSeconds() > blink_duration) {
+        set_visibility(!visible);
+    }
+}
