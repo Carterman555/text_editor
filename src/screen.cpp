@@ -1,10 +1,8 @@
 #include <iostream>
-#include <bits/stdc++.h>
 
 #include "screen.hpp"
 #include "constants.hpp"
 
-using namespace std;
 using namespace Constants;
 
 Screen::Screen() : buffer(),
@@ -16,8 +14,6 @@ window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
 view_handler(window) {
 
 	window.setPosition({ 50, 50 });
-
-	
 
 	text.setString("");
 	text.setCharacterSize(FONT_SIZE);
@@ -50,25 +46,34 @@ view_handler(window) {
 			else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
 				if (mouseData->button == sf::Mouse::Button::Left) {
 					int desired_carot_pos = pos_to_char_index(mouseData->position);
+
 					carot.move(desired_carot_pos);
 
-					selection_start_index = pos_to_char_index(mouseData->position);
+					selection_start_index = carot.get_pos();
 
 					selection_box.clear();
 				}
 			}
 			else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
-				view_handler.scroll_vertically(mouseData->delta);
+				view_handler.scroll_vertically(mouseData->delta, get_num_lines());
 			}
 		}
 
 		carot.update();
+
+		// draw
+		window.setView(view_handler.get_text_view());
 
 		window.clear(sf::Color(25, 25, 25));
 
 		selection_box.draw(window);
 		window.draw(text);
 		carot.draw(window);
+
+		window.setView(view_handler.get_vertical_scroll_view());
+		view_handler.draw_vertical_scroll_bar(window, get_num_lines());
+
+		window.setView(view_handler.get_horizontal_scroll_view());
 
 		window.display();
 	}
@@ -217,16 +222,20 @@ void Screen::delete_selection() {
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
+	window.setView(view_handler.get_text_view());
+
 	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos);
 
-	// Step 1: Get the line number, the start index of that line, and the size of the line
 
-	int line_spacing_pixels = 4; // changes depending on the font I think
-	int line_number = ceil((float)world_pos.y / (FONT_SIZE + line_spacing_pixels));
+	// Step 1: Get the line number, the start index of that line, and the size of the line
+	int line_number = ceil(world_pos.y / LINE_HEIGHT);
 
 	if (line_number < 1) {
 		line_number = 1;
 	}
+
+	cout << "world pos: " << world_pos.x << ", " << world_pos.y << endl;
+	cout << "line num: " << line_number << endl;
 
 	int line_counter = 0;
 	std::string text = buffer.get_display_str();
@@ -254,6 +263,7 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	// If the line number was not reached this means the cursor position was below the last line.
 	// When this happens, it always move the carot to after the last character
 	if (!reached_line_num) {
+		cout << "last char" << endl;
 		return text.size();
 	}
 
@@ -266,10 +276,7 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
 	//... 0 for the first char of each line, 1 for the second, and so on
 	int char_index_in_line = round(((float)world_pos.x) / CHARACTER_WIDTH);
-
-	if (char_index_in_line > chars_in_line) {
-		char_index_in_line = chars_in_line;
-	}
+	char_index_in_line = clamp(char_index_in_line, 0, chars_in_line);
 
 	return line_start_index + char_index_in_line;
 }

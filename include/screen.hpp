@@ -1,11 +1,14 @@
 #pragma once
 
+#include <bits/stdc++.h>
 #include <SFML/Graphics.hpp>
 
 #include "gapbuffer.hpp"
 #include "carot.hpp"
 #include "selectionbox.hpp"
 #include "view_handler.hpp"
+
+using namespace std;
 
 class Screen {
 public:
@@ -22,6 +25,13 @@ public:
      * @brief Get the index in the buffer of the character given a screen position
      */
     int pos_to_char_index(sf::Vector2i screen_pos);
+
+    int get_num_lines() {
+        string str = text.getString();
+        int return_count = count(str.begin(), str.end(), '\n');
+        int num_lines = return_count + 1;
+        return num_lines;
+    }
 
 
 private:
