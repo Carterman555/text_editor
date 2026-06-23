@@ -7,5 +7,5 @@ namespace Constants {
     inline constexpr int CHARACTER_WIDTH = 13;
     inline constexpr int LINE_HEIGHT = FONT_SIZE + 4;
     inline const sf::Vector2f TEXT_SHAPE_OFFSET = sf::Vector2f(0, 4);
-    inline const sf::Vector2u WINDOW_SIZE = {800, 800};
+    inline const sf::Vector2u WINDOW_SIZE = {800, 400};
 }

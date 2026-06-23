@@ -21,45 +21,10 @@ view_handler(window) {
 
 	while (window.isOpen()) {
 
-		while (const std::optional event = window.pollEvent()) {
-			if (event->is<sf::Event::Closed>()) {
-				window.close();
-			}
-			else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-				view_handler.handle_window_resize(resized->size);
-			}
-			else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-				on_key_pressed(keyPressed->scancode);
-			}
-			else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-				type_char(textEntered->unicode);
-			}
-			else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-					int desired_carot_pos = pos_to_char_index(mouseData->position);
-					carot.move(desired_carot_pos);
-
-					selection_box.clear();
-					selection_box.create(selection_start_index, carot.get_pos());
-				}
-			}
-			else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
-				if (mouseData->button == sf::Mouse::Button::Left) {
-					int desired_carot_pos = pos_to_char_index(mouseData->position);
-
-					carot.move(desired_carot_pos);
-
-					selection_start_index = carot.get_pos();
-
-					selection_box.clear();
-				}
-			}
-			else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
-				view_handler.scroll_vertically(mouseData->delta, get_num_lines());
-			}
-		}
+		handle_events();
 
 		carot.update();
+		view_handler.update(get_num_lines());
 
 		// draw
 		window.setView(view_handler.get_text_view());
@@ -71,15 +36,71 @@ view_handler(window) {
 		carot.draw(window);
 
 		window.setView(view_handler.get_vertical_scroll_view());
-		view_handler.draw_vertical_scroll_bar(window, get_num_lines());
+		view_handler.draw_vertical_scroll_bar(get_num_lines());
 
 		window.setView(view_handler.get_horizontal_scroll_view());
 
 		window.display();
+
+		sf::Vector2i mouse_screen_pos = sf::Mouse::getPosition(window);
+		sf::Vector2f mouse_world_pos = window.mapPixelToCoords(mouse_screen_pos, view_handler.get_vertical_scroll_view());
 	}
 }
 
 Screen::~Screen() {
+}
+
+void Screen::handle_events() {
+	while (const std::optional event = window.pollEvent()) {
+		if (event->is<sf::Event::Closed>()) {
+			window.close();
+		}
+		else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
+			view_handler.handle_window_resize(resized->size);
+		}
+		else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+			on_key_pressed(keyPressed->scancode);
+		}
+		else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
+			type_char(textEntered->unicode);
+		}
+		else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
+			if (!view_handler.is_drag_scrolling()) {
+				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+
+					int desired_carot_pos = pos_to_char_index(mouseData->position);
+					carot.move(desired_carot_pos);
+
+					selection_box.clear();
+					selection_box.create(selection_start_index, carot.get_pos());
+				}
+			}
+		}
+		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
+
+			if (mouseData->button == sf::Mouse::Button::Left) {
+				bool cursor_in_text_area = !view_handler.in_vertical_scroll_area(sf::Mouse::getPosition(window));
+				if (cursor_in_text_area) {
+					int desired_carot_pos = pos_to_char_index(mouseData->position);
+					carot.move(desired_carot_pos);
+
+					selection_start_index = carot.get_pos();
+					selection_box.clear();
+				}
+				else {
+					view_handler.start_dragging_vertical_bar();
+				}
+			}
+		}
+		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonReleased>()) {
+			if (mouseData->button == sf::Mouse::Button::Left) {
+				view_handler.stop_dragging_vertical_bar();
+			}
+		}
+		else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
+			view_handler.scroll_vertically(mouseData->delta, get_num_lines());
+		}
+	}
 }
 
 void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
@@ -222,10 +243,7 @@ void Screen::delete_selection() {
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
-	window.setView(view_handler.get_text_view());
-
-	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos);
-
+	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos, view_handler.get_text_view());
 
 	// Step 1: Get the line number, the start index of that line, and the size of the line
 	int line_number = ceil(world_pos.y / LINE_HEIGHT);
@@ -233,9 +251,6 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	if (line_number < 1) {
 		line_number = 1;
 	}
-
-	cout << "world pos: " << world_pos.x << ", " << world_pos.y << endl;
-	cout << "line num: " << line_number << endl;
 
 	int line_counter = 0;
 	std::string text = buffer.get_display_str();
@@ -263,7 +278,6 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	// If the line number was not reached this means the cursor position was below the last line.
 	// When this happens, it always move the carot to after the last character
 	if (!reached_line_num) {
-		cout << "last char" << endl;
 		return text.size();
 	}
 

@@ -15,6 +15,8 @@ public:
     Screen();
     ~Screen();
 
+    void handle_events();
+
     void on_key_pressed(sf::Keyboard::Scancode scancode);
 
     void type_char(int unicode);

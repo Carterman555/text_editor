@@ -14,6 +14,19 @@ Features I'm going to start with:
 
 Classes:
 
+ViewHandler needs to handle
+- Maintaining scroll bar widths when screen resizes
+- Drawing scroll bars
+- Make scroll bars lighter when mouse hover
+- Update scroll bar position when scrolling
+- Drag scroll bar with mouse
+- Jump center of scroll bar to position when click in scroll bar area with mouse
+
+ViewHandler1
+    void scroll_to_vertical_pos(float pixel_pos, int num_lines);
+    void start_dragging_vertical_bar(float mouse_y);
+    void 
+
 
 Changes since last commit:
 - vertical scroll clamp
