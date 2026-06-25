@@ -22,12 +22,6 @@ ViewHandler needs to handle
 - Drag scroll bar with mouse
 - Jump center of scroll bar to position when click in scroll bar area with mouse
 
-ViewHandler1
-    void scroll_to_vertical_pos(float pixel_pos, int num_lines);
-    void start_dragging_vertical_bar(float mouse_y);
-    void 
 
 
 Changes since last commit:
-- vertical scroll clamp
-- 

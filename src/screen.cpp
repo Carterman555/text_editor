@@ -13,6 +13,12 @@ selection_box(text),
 window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
 view_handler(window) {
 
+	// // performance testing
+	// sf::Clock clock;
+	// int frames = 0;
+	// int max_ms = 0;
+	// int prev_ms = 0;
+
 	window.setPosition({ 50, 50 });
 
 	text.setString("");
@@ -20,6 +26,22 @@ view_handler(window) {
 	text.setFillColor(sf::Color::White);
 
 	while (window.isOpen()) {
+
+		// frames++;
+		// if (clock.getElapsedTime().asMilliseconds() >= 200) {
+		// 	cout << "\033[A\rAverage frame time: " << (clock.getElapsedTime().asMilliseconds() / frames) << " ms     " << endl;
+		// 	cout << "\rMax frame time: " << max_ms << " ms     " << flush;
+		// 	clock.restart();
+		// 	frames = 0;
+
+		// 	max_ms = 0;
+
+		// }
+		// int frame_ms = clock.getElapsedTime().asMilliseconds() - prev_ms;
+		// if (frame_ms > max_ms) {
+		// 	max_ms = frame_ms;
+		// }
+		// prev_ms = clock.getElapsedTime().asMilliseconds();
 
 		handle_events();
 
