@@ -4,10 +4,10 @@ Features I'm going to start with:
 - vertical scrolling
     - scroll from mouse wheel
     - scroll bar
-    - scroll from moving carot
+    - scroll from moving caret
 - either horizontal scrolling or line wrapping
     - scroll bar
-    - scroll from moving carot
+    - scroll from moving caret
 - zoom in and out
 - reading from and writing to a file
 

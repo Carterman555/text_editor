@@ -14,15 +14,15 @@ public:
 
     /**
      * @brief Creates the selection with a start and end positions
-     * @param start The character index of the side of the selection without the carot
-     * @param end The character index of the side of the selection with the carot
+     * @param start The character index of the side of the selection without the caret
+     * @param end The character index of the side of the selection with the caret
      *
      * start can be greater than end
      */
     void create(int start, int end);
 
     /**
-     * @brief Moves the end position of the selection (the side with the carot)
+     * @brief Moves the end position of the selection (the side with the caret)
      * @param pos The new end index
      */
     void move_end(int pos);
@@ -64,10 +64,10 @@ public:
 
 private:
 
-    // The character index of the side of the selection without the carot
+    // The character index of the side of the selection without the caret
     int start = -1;
 
-    // The character index of the side of the selection with the carot
+    // The character index of the side of the selection with the caret
     int end = -1;
 
     std::vector<std::unique_ptr<sf::RectangleShape>> shapes;

@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "gapbuffer.hpp"
-#include "carot.hpp"
+#include "caret.hpp"
 #include "selectionbox.hpp"
 #include "view_handler.hpp"
 
@@ -35,6 +35,12 @@ public:
         return num_lines;
     }
 
+    void ensure_caret_visible(int pos) {
+        sf::Vector2f char_pos = text.findCharacterPos(pos);
+        sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
+        view_handler.scroll_to_show_pos(char_center, get_num_lines());
+    }
+
 
 private:
     GapBuffer buffer;
@@ -42,7 +48,7 @@ private:
     sf::Font font;
     sf::Text text;
 
-    Carot carot;
+    Caret caret;
 
     SelectionBox selection_box;
     int selection_start_index;

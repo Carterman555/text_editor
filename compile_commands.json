@@ -19,9 +19,9 @@
 },
 {
   "directory": "/home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug",
-  "command": "/usr/bin/g++ -DPROJECT_DIR=\\\"/home/carterman/workspace/github.com/Carterman555/text_editor\\\" -DSFML_STATIC -I/home/carterman/workspace/github.com/Carterman555/text_editor/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/sfml-src/include -g -std=gnu++17 -o CMakeFiles/main.dir/src/carot.cpp.o -c /home/carterman/workspace/github.com/Carterman555/text_editor/src/carot.cpp",
-  "file": "/home/carterman/workspace/github.com/Carterman555/text_editor/src/carot.cpp",
-  "output": "CMakeFiles/main.dir/src/carot.cpp.o"
+  "command": "/usr/bin/g++ -DPROJECT_DIR=\\\"/home/carterman/workspace/github.com/Carterman555/text_editor\\\" -DSFML_STATIC -I/home/carterman/workspace/github.com/Carterman555/text_editor/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/sfml-src/include -g -std=gnu++17 -o CMakeFiles/main.dir/src/caret.cpp.o -c /home/carterman/workspace/github.com/Carterman555/text_editor/src/caret.cpp",
+  "file": "/home/carterman/workspace/github.com/Carterman555/text_editor/src/caret.cpp",
+  "output": "CMakeFiles/main.dir/src/caret.cpp.o"
 },
 {
   "directory": "/home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug",

@@ -6,57 +6,61 @@
 using namespace Constants;
 
 /**
- * @brief Handles the movement and display of the carot
+ * @brief Handles the movement and display of the caret
  *
- * The carot is the small vertical line where text is written.
+ * The caret is the small vertical line where text is written.
  */
-class Carot {
+class Caret {
 
 public:
 
-    Carot(const sf::Text& text);
+    Caret(const sf::Text& text);
+
+    void set_on_move(std::function<void(int)> callback) {
+        on_move = callback;
+    }
 
     /**
-     * @brief Move the carot to the given position
-     * @param pos desired index of text to move the carot to
+     * @brief Move the caret to the given position
+     * @param pos desired index of text to move the caret to
      */
     void move(int pos);
 
     /**
-     * @brief Move the carot to the left by one
+     * @brief Move the caret to the left by one
      *
-     * Does nothing if carot is in the left most position
+     * Does nothing if caret is in the left most position
      */
     void move_left();
 
     /**
-     * @brief Move the carot to the right by one
+     * @brief Move the caret to the right by one
      *
-     * Has no effect if carot is in the right most position
+     * Has no effect if caret is in the right most position
      */
     void move_right();
 
     /**
-     * @brief Move the carot down to the next line, maintaining the horizontal position
+     * @brief Move the caret down to the next line, maintaining the horizontal position
      *
-     * If in the last line, the carot will move to the end of the line. If at the end of the last
+     * If in the last line, the caret will move to the end of the line. If at the end of the last
      * line, this has no effect.
      */
     void move_down();
 
     /**
-     * @brief Move the carot up to the previous line, maintaining the horizontal position
+     * @brief Move the caret up to the previous line, maintaining the horizontal position
      *
-     * If in the first line, the carot will move to the start of the line. If at the start of the
+     * If in the first line, the caret will move to the start of the line. If at the start of the
      * first line, this has no effect.
      */
     void move_up();
 
 
     /**
-     * @brief Update the position of the carot shape on the screen and reset the blink.
+     * @brief Update the position of the caret shape on the screen and reset the blink.
      *
-     * Invoke when the carot position changes.
+     * Invoke when the caret position changes.
      */
     void update_shape_pos() {
         shape.setPosition(text.findCharacterPos(pos) + TEXT_SHAPE_OFFSET);
@@ -82,10 +86,12 @@ public:
     }
 
 private:
+    std::function<void(int)> on_move;
+
     sf::RectangleShape shape;
     int pos = 0;
 
-    // When you press the up or down arrow, the carot moves up or down. This variable saves
+    // When you press the up or down arrow, the caret moves up or down. This variable saves
     // the original horizontal position.
     int horizontal_pos = 0;
 

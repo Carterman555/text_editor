@@ -21,8 +21,35 @@ ViewHandler::ViewHandler(sf::RenderWindow& window) : window(window) {
 void ViewHandler::update(int num_lines) {
     if (dragging_vertical) {
         int world_mouse_y = window.mapPixelToCoords(sf::Mouse::getPosition(window), vertical_scroll_view).y;
-        scroll_to_vertical_pos(world_mouse_y + drag_offset, num_lines);
+        scroll_bar_to_vertical_pos(world_mouse_y + drag_offset, num_lines);
     }
+}
+
+void ViewHandler::scroll_to_show_pos(sf::Vector2f pos, int num_lines) {
+
+    // scroll vertically to pos
+    int text_area_top = text_rect.position.y;
+    int text_area_bot = text_rect.position.y + text_rect.size.y;
+
+    int y_padding = Constants::LINE_HEIGHT * 2.5;
+
+    if (pos.y - y_padding < text_area_top) {
+        float y = pos.y - y_padding;
+        y = std::clamp(y, 0.f, (float)get_max_text_view_y(num_lines));
+        text_rect.position = sf::Vector2f(text_rect.position.x, y);
+    }
+    else if (pos.y + y_padding > text_area_bot) {
+        // The y position of the text view to make the given y pos appear near the bottom. Subtract
+        // window height to move the position up.
+        float y = ((pos.y + y_padding) - (float)Constants::WINDOW_SIZE.y / zoom);
+        y = std::clamp(y, 0.f, (float)get_max_text_view_y(num_lines));
+        text_rect.position = sf::Vector2f(text_rect.position.x, y);
+    }
+
+    // TODO - scroll horizontally to pos
+
+
+    text_view = sf::View(text_rect);
 }
 
 void ViewHandler::scroll_vertically(float delta, int num_lines) {
@@ -36,7 +63,7 @@ void ViewHandler::scroll_vertically(float delta, int num_lines) {
     text_view = sf::View(text_rect);
 }
 
-void ViewHandler::scroll_to_vertical_pos(int world_target_y, int num_lines) {
+void ViewHandler::scroll_bar_to_vertical_pos(int world_target_y, int num_lines) {
 
     int max_scroll_bar_y = Constants::WINDOW_SIZE.y - vertical_bar_rect.getSize().y;
 

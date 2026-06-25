@@ -12,6 +12,14 @@ public:
     void update(int num_lines);
 
     /**
+     * @brief Scroll the view vertically and horizontal to make sure the given position is within
+     * view. Scroll the minimum amount required to show the position (plus an offset).
+     *
+     * @param pos the world pos to make visible in the text area by scrolling
+     */
+    void scroll_to_show_pos(sf::Vector2f pos, int num_lines);
+
+    /**
      * @brief Scroll the view vertically by a given delta.
      *
      * @param delta the mouse scroll delta, not the view scroll delta
@@ -23,7 +31,7 @@ public:
      *
      * @param world_target_y desired world y pos to scroll the vertical scroll bar to
      */
-    void scroll_to_vertical_pos(int world_target_y, int num_lines);
+    void scroll_bar_to_vertical_pos(int world_target_y, int num_lines);
 
     /**
      * @brief Start moving the vertical scroll bar with the mouse, maintaining the same offset

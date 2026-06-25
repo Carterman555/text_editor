@@ -28,7 +28,7 @@ add_executable(main
     src/main.cpp
     src/gapbuffer.cpp
     src/screen.cpp
-    src/carot.cpp
+    src/caret.cpp
     src/selectionbox.cpp
     src/view_handler.cpp
 )

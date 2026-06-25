@@ -8,16 +8,10 @@ using namespace Constants;
 Screen::Screen() : buffer(),
 font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
 text(font),
-carot(text),
+caret(text),
 selection_box(text),
 window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
 view_handler(window) {
-
-	// // performance testing
-	// sf::Clock clock;
-	// int frames = 0;
-	// int max_ms = 0;
-	// int prev_ms = 0;
 
 	window.setPosition({ 50, 50 });
 
@@ -25,27 +19,13 @@ view_handler(window) {
 	text.setCharacterSize(FONT_SIZE);
 	text.setFillColor(sf::Color::White);
 
+	caret.set_on_move([this](int pos) {ensure_caret_visible(pos);});
+
 	while (window.isOpen()) {
-
-		// frames++;
-		// if (clock.getElapsedTime().asMilliseconds() >= 200) {
-		// 	cout << "\033[A\rAverage frame time: " << (clock.getElapsedTime().asMilliseconds() / frames) << " ms     " << endl;
-		// 	cout << "\rMax frame time: " << max_ms << " ms     " << flush;
-		// 	clock.restart();
-		// 	frames = 0;
-
-		// 	max_ms = 0;
-
-		// }
-		// int frame_ms = clock.getElapsedTime().asMilliseconds() - prev_ms;
-		// if (frame_ms > max_ms) {
-		// 	max_ms = frame_ms;
-		// }
-		// prev_ms = clock.getElapsedTime().asMilliseconds();
 
 		handle_events();
 
-		carot.update();
+		caret.update();
 		view_handler.update(get_num_lines());
 
 		// draw
@@ -55,7 +35,13 @@ view_handler(window) {
 
 		selection_box.draw(window);
 		window.draw(text);
-		carot.draw(window);
+		caret.draw(window);
+
+		sf::CircleShape circle(2);
+		sf::Vector2f char_pos = text.findCharacterPos(caret.get_pos());
+		sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
+		circle.setPosition({ char_center.x - 2, char_center.y - 2 });
+		window.draw(circle);
 
 		window.setView(view_handler.get_vertical_scroll_view());
 		view_handler.draw_vertical_scroll_bar(get_num_lines());
@@ -90,11 +76,11 @@ void Screen::handle_events() {
 			if (!view_handler.is_drag_scrolling()) {
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 
-					int desired_carot_pos = pos_to_char_index(mouseData->position);
-					carot.move(desired_carot_pos);
+					int desired_caret_pos = pos_to_char_index(mouseData->position);
+					caret.move(desired_caret_pos);
 
 					selection_box.clear();
-					selection_box.create(selection_start_index, carot.get_pos());
+					selection_box.create(selection_start_index, caret.get_pos());
 				}
 			}
 		}
@@ -103,10 +89,10 @@ void Screen::handle_events() {
 			if (mouseData->button == sf::Mouse::Button::Left) {
 				bool cursor_in_text_area = !view_handler.in_vertical_scroll_area(sf::Mouse::getPosition(window));
 				if (cursor_in_text_area) {
-					int desired_carot_pos = pos_to_char_index(mouseData->position);
-					carot.move(desired_carot_pos);
+					int desired_caret_pos = pos_to_char_index(mouseData->position);
+					caret.move(desired_caret_pos);
 
-					selection_start_index = carot.get_pos();
+					selection_start_index = caret.get_pos();
 					selection_box.clear();
 				}
 				else {
@@ -134,60 +120,60 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 		window.close();
 	}
 	else if (shift && scancode == sf::Keyboard::Scancode::Left) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
-		carot.move_left();
-		selection_box.create(selection_start, carot.get_pos());
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_left();
+		selection_box.create(selection_start, caret.get_pos());
 	}
 	else if (shift && scancode == sf::Keyboard::Scancode::Right) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
-		carot.move_right();
-		selection_box.create(selection_start, carot.get_pos());
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_right();
+		selection_box.create(selection_start, caret.get_pos());
 	}
 	else if (shift && scancode == sf::Keyboard::Scancode::Up) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
-		carot.move_up();
-		selection_box.create(selection_start, carot.get_pos());
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_up();
+		selection_box.create(selection_start, caret.get_pos());
 	}
 	else if (shift && scancode == sf::Keyboard::Scancode::Down) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : carot.get_pos();
-		carot.move_down();
-		selection_box.create(selection_start, carot.get_pos());
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_down();
+		selection_box.create(selection_start, caret.get_pos());
 	}
 	else if (scancode == sf::Keyboard::Scancode::Left) {
 		if (!selection_box.is_active()) {
-			carot.move_left();
+			caret.move_left();
 		}
 		else {
-			carot.move(selection_box.get_first());
+			caret.move(selection_box.get_first());
 			selection_box.clear();
 		}
 	}
 	else if (scancode == sf::Keyboard::Scancode::Right) {
 		if (!selection_box.is_active()) {
-			carot.move_right();
+			caret.move_right();
 		}
 		else {
-			carot.move(selection_box.get_last());
+			caret.move(selection_box.get_last());
 			selection_box.clear();
 		}
 	}
 	else if (scancode == sf::Keyboard::Scancode::Down) {
 		if (!selection_box.is_active()) {
-			carot.move_down();
+			caret.move_down();
 		}
 		else {
-			carot.move(selection_box.get_last());
-			carot.move_down();
+			caret.move(selection_box.get_last());
+			caret.move_down();
 			selection_box.clear();
 		}
 	}
 	else if (scancode == sf::Keyboard::Scancode::Up) {
 		if (!selection_box.is_active()) {
-			carot.move_up();
+			caret.move_up();
 		}
 		else {
-			carot.move(selection_box.get_first());
-			carot.move_up();
+			caret.move(selection_box.get_first());
+			caret.move_up();
 			selection_box.clear();
 		}
 	}
@@ -205,14 +191,14 @@ void Screen::type_char(int unicode) {
 			return;
 		}
 
-		if (carot.get_pos() <= 0) {
+		if (caret.get_pos() <= 0) {
 			return;
 		}
 
-		buffer.remove(carot.get_pos());
+		buffer.remove(caret.get_pos());
 
 		text.setString(buffer.get_display_str());
-		carot.move_left();
+		caret.move_left();
 	}
 	else if (unicode == delete_unicode) {
 
@@ -221,11 +207,11 @@ void Screen::type_char(int unicode) {
 			return;
 		}
 
-		if (carot.get_pos() >= text.getString().getSize()) {
+		if (caret.get_pos() >= text.getString().getSize()) {
 			return;
 		}
 
-		buffer.remove(carot.get_pos() + 1);
+		buffer.remove(caret.get_pos() + 1);
 
 		text.setString(buffer.get_display_str());
 	}
@@ -241,16 +227,16 @@ void Screen::type_char(int unicode) {
 			delete_selection();
 		}
 
-		buffer.insert(c, carot.get_pos());
+		buffer.insert(c, caret.get_pos());
 
 		text.setString(buffer.get_display_str());
-		carot.move_right();
+		caret.move_right();
 	}
 }
 
 void Screen::delete_selection() {
 
-	carot.move(selection_box.get_first());
+	caret.move(selection_box.get_first());
 
 	// repeatedly remove the first character in the selection from the buffer. Since the element is
 	// removed, each loop iteration removes the next character in order.
@@ -298,7 +284,7 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	}
 
 	// If the line number was not reached this means the cursor position was below the last line.
-	// When this happens, it always move the carot to after the last character
+	// When this happens, it always move the caret to after the last character
 	if (!reached_line_num) {
 		return text.size();
 	}
