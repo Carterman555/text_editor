@@ -30,7 +30,7 @@ add_executable(main
     src/screen.cpp
     src/caret.cpp
     src/selectionbox.cpp
-    src/view_handler.cpp
+    src/scroll_view.cpp
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)

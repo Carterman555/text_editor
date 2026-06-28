@@ -11,7 +11,7 @@ text(font),
 caret(text),
 selection_box(text),
 window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
-view_handler(window) {
+scroll_view(window) {
 
 	window.setPosition({ 50, 50 });
 
@@ -26,10 +26,10 @@ view_handler(window) {
 		handle_events();
 
 		caret.update();
-		view_handler.update(get_num_lines());
+		scroll_view.update();
 
 		// draw
-		window.setView(view_handler.get_text_view());
+		window.setView(scroll_view.get_content_view());
 
 		window.clear(sf::Color(25, 25, 25));
 
@@ -37,21 +37,15 @@ view_handler(window) {
 		window.draw(text);
 		caret.draw(window);
 
-		sf::CircleShape circle(2);
-		sf::Vector2f char_pos = text.findCharacterPos(caret.get_pos());
-		sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
-		circle.setPosition({ char_center.x - 2, char_center.y - 2 });
-		window.draw(circle);
+		window.setView(scroll_view.get_vertical_scroll_view());
+		scroll_view.draw_vertical_scroll_bar();
 
-		window.setView(view_handler.get_vertical_scroll_view());
-		view_handler.draw_vertical_scroll_bar(get_num_lines());
-
-		window.setView(view_handler.get_horizontal_scroll_view());
+		window.setView(scroll_view.get_horizontal_scroll_view());
 
 		window.display();
 
 		sf::Vector2i mouse_screen_pos = sf::Mouse::getPosition(window);
-		sf::Vector2f mouse_world_pos = window.mapPixelToCoords(mouse_screen_pos, view_handler.get_vertical_scroll_view());
+		sf::Vector2f mouse_world_pos = window.mapPixelToCoords(mouse_screen_pos, scroll_view.get_vertical_scroll_view());
 	}
 }
 
@@ -64,7 +58,7 @@ void Screen::handle_events() {
 			window.close();
 		}
 		else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-			view_handler.handle_window_resize(resized->size);
+			scroll_view.handle_window_resize(resized->size);
 		}
 		else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
 			on_key_pressed(keyPressed->scancode);
@@ -73,7 +67,7 @@ void Screen::handle_events() {
 			type_char(textEntered->unicode);
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
-			if (!view_handler.is_drag_scrolling()) {
+			if (!scroll_view.is_drag_scrolling()) {
 				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 
 					int desired_caret_pos = pos_to_char_index(mouseData->position);
@@ -87,7 +81,7 @@ void Screen::handle_events() {
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
 
 			if (mouseData->button == sf::Mouse::Button::Left) {
-				bool cursor_in_text_area = !view_handler.in_vertical_scroll_area(sf::Mouse::getPosition(window));
+				bool cursor_in_text_area = !scroll_view.in_vertical_scroll_area(sf::Mouse::getPosition(window));
 				if (cursor_in_text_area) {
 					int desired_caret_pos = pos_to_char_index(mouseData->position);
 					caret.move(desired_caret_pos);
@@ -96,17 +90,17 @@ void Screen::handle_events() {
 					selection_box.clear();
 				}
 				else {
-					view_handler.start_dragging_vertical_bar();
+					scroll_view.start_dragging_vertical_bar();
 				}
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonReleased>()) {
 			if (mouseData->button == sf::Mouse::Button::Left) {
-				view_handler.stop_dragging_vertical_bar();
+				scroll_view.stop_dragging_vertical_bar();
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
-			view_handler.scroll_vertically(mouseData->delta, get_num_lines());
+			scroll_view.scroll_vertically(mouseData->delta);
 		}
 	}
 }
@@ -197,7 +191,7 @@ void Screen::type_char(int unicode) {
 
 		buffer.remove(caret.get_pos());
 
-		text.setString(buffer.get_display_str());
+		update_text();
 		caret.move_left();
 	}
 	else if (unicode == delete_unicode) {
@@ -213,7 +207,7 @@ void Screen::type_char(int unicode) {
 
 		buffer.remove(caret.get_pos() + 1);
 
-		text.setString(buffer.get_display_str());
+		update_text();
 	}
 	else if (unicode < 128) {
 		char c = static_cast<char>(unicode);
@@ -229,7 +223,7 @@ void Screen::type_char(int unicode) {
 
 		buffer.insert(c, caret.get_pos());
 
-		text.setString(buffer.get_display_str());
+		update_text();
 		caret.move_right();
 	}
 }
@@ -246,12 +240,12 @@ void Screen::delete_selection() {
 	}
 	selection_box.clear();
 
-	text.setString(buffer.get_display_str());
+	update_text();
 }
 
 int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 
-	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos, view_handler.get_text_view());
+	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos, scroll_view.get_content_view());
 
 	// Step 1: Get the line number, the start index of that line, and the size of the line
 	int line_number = ceil(world_pos.y / LINE_HEIGHT);

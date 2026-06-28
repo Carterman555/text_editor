@@ -6,7 +6,7 @@
 #include "gapbuffer.hpp"
 #include "caret.hpp"
 #include "selectionbox.hpp"
-#include "view_handler.hpp"
+#include "scroll_view.hpp"
 
 using namespace std;
 
@@ -23,10 +23,18 @@ public:
 
     void delete_selection();
 
-    /**
-     * @brief Get the index in the buffer of the character given a screen position
-     */
+    // Get the index in the buffer of the character given a screen position
     int pos_to_char_index(sf::Vector2i screen_pos);
+
+    // Set sf::Text string to buffer text, then update the scroll view content size
+    void update_text() {
+        text.setString(buffer.get_display_str());
+
+        sf::Vector2f padding = { 5, 5 };
+        sf::Vector2f content_size = text.getGlobalBounds().position + text.getGlobalBounds().size + padding;
+
+        scroll_view.set_content_size((sf::Vector2i)content_size);
+    }
 
     int get_num_lines() {
         string str = text.getString();
@@ -38,7 +46,8 @@ public:
     void ensure_caret_visible(int pos) {
         sf::Vector2f char_pos = text.findCharacterPos(pos);
         sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
-        view_handler.scroll_to_show_pos(char_center, get_num_lines());
+        sf::Vector2f padding = { CHARACTER_WIDTH * 1.5, LINE_HEIGHT * 2.5 };
+        scroll_view.scroll_to_show_pos(char_center, padding);
     }
 
 
@@ -55,5 +64,6 @@ private:
 
     sf::RenderWindow window;
 
-    ViewHandler view_handler;
+    ScrollView scroll_view;
+    sf::Vector2i text_area_size;
 };

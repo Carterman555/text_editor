@@ -31,9 +31,9 @@
 },
 {
   "directory": "/home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug",
-  "command": "/usr/bin/g++ -DPROJECT_DIR=\\\"/home/carterman/workspace/github.com/Carterman555/text_editor\\\" -DSFML_STATIC -I/home/carterman/workspace/github.com/Carterman555/text_editor/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/sfml-src/include -g -std=gnu++17 -o CMakeFiles/main.dir/src/view_handler.cpp.o -c /home/carterman/workspace/github.com/Carterman555/text_editor/src/view_handler.cpp",
-  "file": "/home/carterman/workspace/github.com/Carterman555/text_editor/src/view_handler.cpp",
-  "output": "CMakeFiles/main.dir/src/view_handler.cpp.o"
+  "command": "/usr/bin/g++ -DPROJECT_DIR=\\\"/home/carterman/workspace/github.com/Carterman555/text_editor\\\" -DSFML_STATIC -I/home/carterman/workspace/github.com/Carterman555/text_editor/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/sfml-src/include -g -std=gnu++17 -o CMakeFiles/main.dir/src/scroll_view.cpp.o -c /home/carterman/workspace/github.com/Carterman555/text_editor/src/scroll_view.cpp",
+  "file": "/home/carterman/workspace/github.com/Carterman555/text_editor/src/scroll_view.cpp",
+  "output": "CMakeFiles/main.dir/src/scroll_view.cpp.o"
 },
 {
   "directory": "/home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug",

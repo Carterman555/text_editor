@@ -1,26 +1,22 @@
 
 
+I'm going to switch view_handler to scroll_view because code that is more general is generally
+better. I want it to work with any content.
+
 Features I'm going to start with:
 - vertical scrolling
     - scroll from mouse wheel
     - scroll bar
     - scroll from moving caret
-- either horizontal scrolling or line wrapping
+- horizontal scrolling
     - scroll bar
     - scroll from moving caret
 - zoom in and out
 - reading from and writing to a file
 
+- fix ctrl + letter writing mystery
 
 Classes:
-
-ViewHandler needs to handle
-- Maintaining scroll bar widths when screen resizes
-- Drawing scroll bars
-- Make scroll bars lighter when mouse hover
-- Update scroll bar position when scrolling
-- Drag scroll bar with mouse
-- Jump center of scroll bar to position when click in scroll bar area with mouse
 
 
 
