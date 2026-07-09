@@ -37,15 +37,9 @@ scroll_view(window) {
 		window.draw(text);
 		caret.draw(window);
 
-		window.setView(scroll_view.get_vertical_scroll_view());
-		scroll_view.draw_vertical_scroll_bar();
-
-		window.setView(scroll_view.get_horizontal_scroll_view());
+		scroll_view.draw();
 
 		window.display();
-
-		sf::Vector2i mouse_screen_pos = sf::Mouse::getPosition(window);
-		sf::Vector2f mouse_world_pos = window.mapPixelToCoords(mouse_screen_pos, scroll_view.get_vertical_scroll_view());
 	}
 }
 
@@ -53,6 +47,7 @@ Screen::~Screen() {
 }
 
 void Screen::handle_events() {
+
 	while (const std::optional event = window.pollEvent()) {
 		if (event->is<sf::Event::Closed>()) {
 			window.close();
@@ -67,40 +62,42 @@ void Screen::handle_events() {
 			type_char(textEntered->unicode);
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
-			if (!scroll_view.is_drag_scrolling()) {
-				if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			bool drag_scrolling = scroll_view.get_scroll_bar(Axis::X).is_dragging() || scroll_view.get_scroll_bar(Axis::Y).is_dragging();
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !drag_scrolling) {
 
-					int desired_caret_pos = pos_to_char_index(mouseData->position);
-					caret.move(desired_caret_pos);
+				int desired_caret_pos = pos_to_char_index(mouseData->position);
+				caret.move(desired_caret_pos);
 
-					selection_box.clear();
-					selection_box.create(selection_start_index, caret.get_pos());
-				}
+				selection_box.clear();
+				selection_box.create(selection_start_index, caret.get_pos());
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
 
 			if (mouseData->button == sf::Mouse::Button::Left) {
-				bool cursor_in_text_area = !scroll_view.in_vertical_scroll_area(sf::Mouse::getPosition(window));
-				if (cursor_in_text_area) {
+				if (scroll_view.get_scroll_bar(Axis::X).mouse_in_scroll_area()) {
+					scroll_view.get_scroll_bar(Axis::X).start_dragging_scroll_bar();
+				}
+				else if (scroll_view.get_scroll_bar(Axis::Y).mouse_in_scroll_area()) {
+					scroll_view.get_scroll_bar(Axis::Y).start_dragging_scroll_bar();
+				}
+				else {
 					int desired_caret_pos = pos_to_char_index(mouseData->position);
 					caret.move(desired_caret_pos);
 
 					selection_start_index = caret.get_pos();
 					selection_box.clear();
 				}
-				else {
-					scroll_view.start_dragging_vertical_bar();
-				}
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonReleased>()) {
 			if (mouseData->button == sf::Mouse::Button::Left) {
-				scroll_view.stop_dragging_vertical_bar();
+				scroll_view.get_scroll_bar(Axis::X).stop_dragging_scroll_bar();
+				scroll_view.get_scroll_bar(Axis::Y).stop_dragging_scroll_bar();
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
-			scroll_view.scroll_vertically(mouseData->delta);
+			scroll_view.scroll_by_delta(Axis::Y, mouseData->delta);
 		}
 	}
 }

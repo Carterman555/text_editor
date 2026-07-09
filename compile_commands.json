@@ -37,6 +37,12 @@
 },
 {
   "directory": "/home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug",
+  "command": "/usr/bin/g++ -DPROJECT_DIR=\\\"/home/carterman/workspace/github.com/Carterman555/text_editor\\\" -DSFML_STATIC -I/home/carterman/workspace/github.com/Carterman555/text_editor/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/sfml-src/include -g -std=gnu++17 -o CMakeFiles/main.dir/src/scroll_bar.cpp.o -c /home/carterman/workspace/github.com/Carterman555/text_editor/src/scroll_bar.cpp",
+  "file": "/home/carterman/workspace/github.com/Carterman555/text_editor/src/scroll_bar.cpp",
+  "output": "CMakeFiles/main.dir/src/scroll_bar.cpp.o"
+},
+{
+  "directory": "/home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug",
   "command": "/usr/bin/g++ -DPROJECT_DIR=\\\"/home/carterman/workspace/github.com/Carterman555/text_editor\\\" -I/home/carterman/workspace/github.com/Carterman555/text_editor/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/googletest-src/googletest/include -isystem /home/carterman/workspace/github.com/Carterman555/text_editor/out/build/linux-gcc-debug/_deps/googletest-src/googletest -g -std=gnu++17 -o CMakeFiles/buffer_test.dir/tests/buffer_test.cpp.o -c /home/carterman/workspace/github.com/Carterman555/text_editor/tests/buffer_test.cpp",
   "file": "/home/carterman/workspace/github.com/Carterman555/text_editor/tests/buffer_test.cpp",
   "output": "CMakeFiles/buffer_test.dir/tests/buffer_test.cpp.o"
