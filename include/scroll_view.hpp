@@ -35,15 +35,16 @@ public:
      */
     void set_scroll_bar_pos(Axis axis, int world_target_y);
 
-    /**
-     * @brief show more and prevent stretching when resizing window
-     * @param new_size the size of the window in pixels after resizing.
-     */
-    void handle_window_resize(sf::Vector2u new_size);
+    // show more and prevent stretching when resizing window
+    void handle_window_resize();
+
+    void zoom_in();
+    void zoom_out();
 
     void draw();
 
     void set_content_size(sf::Vector2i size) {
+        content_size = size;
         zoomed_content_size = sf::Vector2i(size.x * zoom, size.y * zoom);
     }
 
@@ -61,6 +62,9 @@ private:
      */
     void scroll_to_show_pos(Axis axis, float pos, float padding);
 
+    // if the content view is outside its bounds, move it inside the bounds
+    void ensure_view_within_bounds();
+
     // Calulcate the scroll bar height and position, then draw it. If there is no scrolling
     // possible along the axis, don't draw.
     void draw_scroll_bar(Axis axis);
@@ -70,8 +74,9 @@ private:
     sf::View content_view;
 
     sf::FloatRect content_view_rect;
-    float zoom = 2; // zoom is greater when more zoomed in
+    float zoom = 1; // zoom is greater when more zoomed in
 
+    sf::Vector2i content_size = { 0, 0 };
     sf::Vector2i zoomed_content_size = { 0, 0 };
 
     sf::Vector2i max_content_view_pos() const {

@@ -1,11 +1,13 @@
 #include <iostream>
 
 #include "screen.hpp"
+#include "filehandler.hpp"
 #include "constants.hpp"
+#include "logger.hpp"
 
 using namespace Constants;
 
-Screen::Screen() : buffer(),
+Screen::Screen(string contents) : buffer(),
 font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
 text(font),
 caret(text),
@@ -15,14 +17,19 @@ scroll_view(window) {
 
 	window.setPosition({ 50, 50 });
 
-	text.setString("");
 	text.setCharacterSize(FONT_SIZE);
 	text.setFillColor(sf::Color::White);
 
+	for (int i = 0; i < contents.size(); i++) {
+		buffer.insert(contents.at(i), i);
+	}
+	update_text();
+
 	caret.set_on_move([this](int pos) {ensure_caret_visible(pos);});
+}
 
+void Screen::run_window() {
 	while (window.isOpen()) {
-
 		handle_events();
 
 		caret.update();
@@ -43,9 +50,6 @@ scroll_view(window) {
 	}
 }
 
-Screen::~Screen() {
-}
-
 void Screen::handle_events() {
 
 	while (const std::optional event = window.pollEvent()) {
@@ -53,13 +57,13 @@ void Screen::handle_events() {
 			window.close();
 		}
 		else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-			scroll_view.handle_window_resize(resized->size);
+			scroll_view.handle_window_resize();
 		}
 		else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
 			on_key_pressed(keyPressed->scancode);
 		}
 		else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-			type_char(textEntered->unicode);
+			on_text_entered(textEntered->unicode);
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
 			bool drag_scrolling = scroll_view.get_scroll_bar(Axis::X).is_dragging() || scroll_view.get_scroll_bar(Axis::Y).is_dragging();
@@ -97,7 +101,20 @@ void Screen::handle_events() {
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseWheelScrolled>()) {
-			scroll_view.scroll_by_delta(Axis::Y, mouseData->delta);
+			bool ctrl_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
+				sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl);
+
+			if (ctrl_down) {
+				if (mouseData->delta < 0) {
+					scroll_view.zoom_out();
+				}
+				else if (mouseData->delta > 0) {
+					scroll_view.zoom_in();
+				}
+			}
+			else {
+				scroll_view.scroll_by_delta(Axis::Y, mouseData->delta);
+			}
 		}
 	}
 }
@@ -170,10 +187,31 @@ void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
 	}
 }
 
-void Screen::type_char(int unicode) {
+void Screen::on_text_entered(int unicode) {
 
+	const int minus_unicode = 45;
+	const int equal_unicode = 61;
+	const int s_unicode = 19;
 	const int backspace_unicode = 8;
 	const int delete_unicode = 127;
+
+	bool ctrl_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl);
+
+	if (ctrl_down) {
+
+		if (unicode == minus_unicode) {
+			scroll_view.zoom_out();
+		}
+		else if (unicode == equal_unicode) {
+			scroll_view.zoom_in();
+		}
+		else if (unicode == s_unicode) {
+			if (on_save) on_save(buffer.get_display_str());
+		}
+
+		return;
+	}
 
 	if (unicode == backspace_unicode) {
 

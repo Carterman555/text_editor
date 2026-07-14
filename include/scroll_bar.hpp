@@ -29,14 +29,20 @@ public:
     void stop_dragging_scroll_bar();
 
     /**
-     * @brief Calulcate the scroll bar height and position, then draw it.
+     * @brief Calculate the scroll bar height and position, then draw it.
      *
      * @param size_ratio The ratio of content that is visible in the window (window size / content size). Value between 0 and 1
      * @param pos_ratio How scrolled the content is (window position / window position when fully scrolled). Value between 0 and 1
      */
     void draw(float size_ratio, float pos_ratio);
 
-    void handle_window_resize(sf::Vector2u new_size);
+    /**
+     * @brief Set the viewport size and position based on the window size
+     *
+     * as the screen size decreases, the width ratio of the scroll bars need to increase to maintain
+     * the same absolute width and vice versa.
+     */
+    void update_viewport();
 
     /**
      * @brief Convert the given world position to a value 0 to 1 based on how far the given pos is
@@ -76,7 +82,9 @@ private:
     sf::View view;
     sf::RectangleShape shape;
 
-    const int width = 16;
+    const int width = 12;
+    const int length_padding = 32;
+    const int width_padding = 6;
 
     bool dragging = false; // is dragging the scroll bar with the mouse
     int drag_offset; // world offset the mouse is from the left/top of the scroll bar when dragging

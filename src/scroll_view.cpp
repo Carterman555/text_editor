@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "scroll_view.hpp"
+#include "logger.hpp"
+#include <format>
 
 using Constants::WINDOW_SIZE;
 
@@ -51,6 +53,13 @@ void ScrollView::scroll_to_show_pos(Axis axis, float pos, float padding) {
     }
 }
 
+void ScrollView::ensure_view_within_bounds() {
+    sf::Vector2i max_pos = max_content_view_pos();
+    content_view_rect.position.x = std::clamp(content_view_rect.position.x, 0.f, (float)max_pos.x);
+    content_view_rect.position.y = std::clamp(content_view_rect.position.y, 0.f, (float)max_pos.y);
+    content_view = sf::View(content_view_rect);
+}
+
 void ScrollView::scroll_by_delta(Axis axis, float delta) {
 
     ScrollBar& scroll_bar = get_scroll_bar(axis);
@@ -74,12 +83,30 @@ void ScrollView::set_scroll_bar_pos(Axis axis, int world_target_pos) {
     content_view = sf::View(content_view_rect);
 }
 
-void ScrollView::handle_window_resize(sf::Vector2u new_size) {
-    content_view_rect.size = sf::Vector2f(new_size.x / zoom, new_size.y / zoom);
+void ScrollView::handle_window_resize() {
+    content_view_rect.size = sf::Vector2f(window.getSize().x / zoom, window.getSize().y / zoom);
     content_view = sf::View(content_view_rect);
 
-    horizontal_scroll_bar.handle_window_resize(new_size);
-    vertical_scroll_bar.handle_window_resize(new_size);
+    horizontal_scroll_bar.update_viewport();
+    vertical_scroll_bar.update_viewport();
+}
+
+void ScrollView::zoom_in() {
+    zoom *= 1.15f;
+    zoom = std::min(zoom, 20.f);
+
+    zoomed_content_size = sf::Vector2i(content_size.x * zoom, content_size.y * zoom);
+    handle_window_resize();
+    ensure_view_within_bounds();
+}
+
+void ScrollView::zoom_out() {
+    zoom /= 1.15f;
+    zoom = std::max(zoom, 0.1f);
+
+    zoomed_content_size = sf::Vector2i(content_size.x * zoom, content_size.y * zoom);
+    handle_window_resize();
+    ensure_view_within_bounds();
 }
 
 void ScrollView::draw() {

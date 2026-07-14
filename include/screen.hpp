@@ -12,14 +12,19 @@ using namespace std;
 
 class Screen {
 public:
-    Screen();
-    ~Screen();
+    Screen(string contents = "");
+
+    void set_on_save(std::function<void(string)> callback) {
+        on_save = callback;
+    }
+
+    void run_window();
 
     void handle_events();
 
     void on_key_pressed(sf::Keyboard::Scancode scancode);
 
-    void type_char(int unicode);
+    void on_text_entered(int unicode);
 
     void delete_selection();
 
@@ -52,6 +57,8 @@ public:
 
 
 private:
+    std::function<void(string)> on_save;
+
     GapBuffer buffer;
 
     sf::Font font;

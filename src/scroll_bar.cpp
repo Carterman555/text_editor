@@ -14,8 +14,7 @@ ScrollBar::ScrollBar(sf::RenderWindow& window, Axis axis) : window(window) {
     float window_along = along(WINDOW_SIZE);
     view = sf::View(sf::FloatRect({ 0.f, 0.f }, make_vec(window_along, width)));
 
-    float ratio = (float)width / across(WINDOW_SIZE);
-    view.setViewport(sf::FloatRect(make_vec(0.f, 1.f - ratio), make_vec(1.f, ratio)));
+    update_viewport();
 }
 
 void ScrollBar::start_dragging_scroll_bar() {
@@ -69,13 +68,22 @@ void ScrollBar::draw(float size_ratio, float pos_ratio) {
 
     sf::View old_view = window.getView();
     window.setView(view);
+
+    sf::RectangleShape scroll_area_shape(make_vec(along(WINDOW_SIZE), width));
+    scroll_area_shape.setFillColor(sf::Color(40, 40, 40));
+    window.draw(scroll_area_shape);
+
     window.draw(shape);
     window.setView(old_view);
 }
 
-void ScrollBar::handle_window_resize(sf::Vector2u new_size) {
-    // as the screen size decreases, the width ratio of the scroll bars need to increase to maintain
-    // the same absolute width and vice versa
-    float new_ratio = (float)width / across(new_size);
-    view.setViewport(sf::FloatRect(make_vec(0.f, 1.f - new_ratio), make_vec(1.f, new_ratio)));
+void ScrollBar::update_viewport() {
+    float width_ratio = (float)width / across(window.getSize());
+    float len_padding_ratio = (float)length_padding / along(window.getSize());
+    float width_padding_ratio = (float)width_padding / across(window.getSize());
+
+    sf::Vector2f pos = make_vec(len_padding_ratio, 1.f - width_ratio - width_padding_ratio);
+    sf::Vector2f size = make_vec(1.f - (len_padding_ratio * 2), width_ratio);
+
+    view.setViewport(sf::FloatRect(pos, size));
 }

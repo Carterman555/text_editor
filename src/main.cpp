@@ -1,12 +1,26 @@
-#include <SFML/Graphics.hpp>
 #include <iostream>
-#include <bits/stdc++.h>
 
 #include "screen.hpp"
+#include "filehandler.hpp"
 
 using namespace std;
 
-int main() {
-	Screen screen;
+int main(int argc, char* argv[]) {
 
+	string contents = "";
+	if (argc == 2) {
+		contents = FileHandler::read_text_file(argv[1]);
+	}
+	if (argc > 2) {
+		cerr << "Error: program received too many parameters!" << endl;
+		return 1;
+	}
+
+	Screen screen(contents);
+	screen.set_on_save([argv](string contents) {
+		FileHandler::write_text_file(argv[1], contents);
+		});
+	screen.run_window();
 }
+
+
