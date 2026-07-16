@@ -1,15 +1,16 @@
 #include <fstream>
 #include <iostream>
+#include <optional>
 
 #include "filehandler.hpp"
 
-string FileHandler::read_text_file(string file_path) {
+std::optional<string> FileHandler::read_text_file(string file_path) {
 
     ifstream file(file_path);
 
     if (!file.is_open()) {
         cerr << "Error: Failed to open file (" << file_path << ")" << endl;
-        return "";
+        return std::nullopt;
     }
 
     string contents;
@@ -19,9 +20,9 @@ string FileHandler::read_text_file(string file_path) {
     }
 
     if (!file.eof()) {
-        cerr << "Error: File reading failed!" << endl;
+        cerr << "Error: File reading failed (" << file_path << ")" << endl;
         file.close();
-        return "";
+        return std::nullopt;
     }
 
     file.close();

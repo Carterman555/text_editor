@@ -38,6 +38,11 @@ public:
         }
     }
 
+    std::string get_selection() {
+        std::string str = text.getString();
+        return std::string(str.begin() + get_first(), str.begin() + get_last());
+    }
+
     int get_start() {
         return start;
     }

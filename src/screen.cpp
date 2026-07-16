@@ -60,10 +60,15 @@ void Screen::handle_events() {
 			scroll_view.handle_window_resize();
 		}
 		else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-			on_key_pressed(keyPressed->scancode);
+			on_key_pressed(keyPressed);
 		}
 		else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-			on_text_entered(textEntered->unicode);
+			if (textEntered->unicode == 9 || (textEntered->unicode >= 32 && textEntered->unicode < 127)) {
+				type_char(static_cast<char>(textEntered->unicode));
+			}
+			else if (textEntered->unicode == 13) {
+				type_char('\n');
+			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
 			bool drag_scrolling = scroll_view.get_scroll_bar(Axis::X).is_dragging() || scroll_view.get_scroll_bar(Axis::Y).is_dragging();
@@ -119,102 +124,11 @@ void Screen::handle_events() {
 	}
 }
 
-void Screen::on_key_pressed(sf::Keyboard::Scancode scancode) {
-
-	bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ||
-		sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RShift);
-
-	if (scancode == sf::Keyboard::Scancode::Escape) {
+void Screen::on_key_pressed(const sf::Event::KeyPressed* keyPressed) {
+	if (keyPressed->scancode == sf::Keyboard::Scancode::Escape) {
 		window.close();
 	}
-	else if (shift && scancode == sf::Keyboard::Scancode::Left) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
-		caret.move_left();
-		selection_box.create(selection_start, caret.get_pos());
-	}
-	else if (shift && scancode == sf::Keyboard::Scancode::Right) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
-		caret.move_right();
-		selection_box.create(selection_start, caret.get_pos());
-	}
-	else if (shift && scancode == sf::Keyboard::Scancode::Up) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
-		caret.move_up();
-		selection_box.create(selection_start, caret.get_pos());
-	}
-	else if (shift && scancode == sf::Keyboard::Scancode::Down) {
-		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
-		caret.move_down();
-		selection_box.create(selection_start, caret.get_pos());
-	}
-	else if (scancode == sf::Keyboard::Scancode::Left) {
-		if (!selection_box.is_active()) {
-			caret.move_left();
-		}
-		else {
-			caret.move(selection_box.get_first());
-			selection_box.clear();
-		}
-	}
-	else if (scancode == sf::Keyboard::Scancode::Right) {
-		if (!selection_box.is_active()) {
-			caret.move_right();
-		}
-		else {
-			caret.move(selection_box.get_last());
-			selection_box.clear();
-		}
-	}
-	else if (scancode == sf::Keyboard::Scancode::Down) {
-		if (!selection_box.is_active()) {
-			caret.move_down();
-		}
-		else {
-			caret.move(selection_box.get_last());
-			caret.move_down();
-			selection_box.clear();
-		}
-	}
-	else if (scancode == sf::Keyboard::Scancode::Up) {
-		if (!selection_box.is_active()) {
-			caret.move_up();
-		}
-		else {
-			caret.move(selection_box.get_first());
-			caret.move_up();
-			selection_box.clear();
-		}
-	}
-}
-
-void Screen::on_text_entered(int unicode) {
-
-	const int minus_unicode = 45;
-	const int equal_unicode = 61;
-	const int s_unicode = 19;
-	const int backspace_unicode = 8;
-	const int delete_unicode = 127;
-
-	bool ctrl_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) ||
-		sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl);
-
-	if (ctrl_down) {
-
-		if (unicode == minus_unicode) {
-			scroll_view.zoom_out();
-		}
-		else if (unicode == equal_unicode) {
-			scroll_view.zoom_in();
-		}
-		else if (unicode == s_unicode) {
-			if (on_save) on_save(buffer.get_display_str());
-		}
-
-		return;
-	}
-
-	if (unicode == backspace_unicode) {
-
+	else if (keyPressed->scancode == sf::Keyboard::Scancode::Backspace) {
 		if (selection_box.is_active()) {
 			delete_selection();
 			return;
@@ -229,8 +143,7 @@ void Screen::on_text_entered(int unicode) {
 		update_text();
 		caret.move_left();
 	}
-	else if (unicode == delete_unicode) {
-
+	else if (keyPressed->scancode == sf::Keyboard::Scancode::Delete) {
 		if (selection_box.is_active()) {
 			delete_selection();
 			return;
@@ -244,23 +157,114 @@ void Screen::on_text_entered(int unicode) {
 
 		update_text();
 	}
-	else if (unicode < 128) {
-		char c = static_cast<char>(unicode);
 
-		const int return_unicode = 13;
-		if (unicode == return_unicode) {
-			c = '\n';
+	handle_commands(keyPressed);
+	handle_arrow_keys(keyPressed);
+}
+
+void Screen::handle_commands(const sf::Event::KeyPressed* keyPressed) {
+	if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::S) {
+		if (on_save) on_save(buffer.get_display_str());
+	}
+	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::C) {
+		if (selection_box.is_active()) {
+			sf::Clipboard::setString(selection_box.get_selection());
 		}
+	}
+	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::V) {
 
 		if (selection_box.is_active()) {
 			delete_selection();
 		}
 
-		buffer.insert(c, caret.get_pos());
+		string clipboard = sf::Clipboard::getString();
+		for (int i = 0; i < clipboard.size(); i++) {
+			buffer.insert(clipboard.at(i), caret.get_pos() + i);
+		}
 
 		update_text();
-		caret.move_right();
+
+		caret.move(caret.get_pos() + clipboard.size());
 	}
+	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::Hyphen) {
+		scroll_view.zoom_out();
+	}
+	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::Equal) {
+		scroll_view.zoom_in();
+	}
+}
+
+void Screen::handle_arrow_keys(const sf::Event::KeyPressed* keyPressed) {
+	if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Left) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_left();
+		selection_box.create(selection_start, caret.get_pos());
+	}
+	else if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Right) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_right();
+		selection_box.create(selection_start, caret.get_pos());
+	}
+	else if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Up) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_up();
+		selection_box.create(selection_start, caret.get_pos());
+	}
+	else if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Down) {
+		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
+		caret.move_down();
+		selection_box.create(selection_start, caret.get_pos());
+	}
+	else if (keyPressed->scancode == sf::Keyboard::Scancode::Left) {
+		if (!selection_box.is_active()) {
+			caret.move_left();
+		}
+		else {
+			caret.move(selection_box.get_first());
+			selection_box.clear();
+		}
+	}
+	else if (keyPressed->scancode == sf::Keyboard::Scancode::Right) {
+		if (!selection_box.is_active()) {
+			caret.move_right();
+		}
+		else {
+			caret.move(selection_box.get_last());
+			selection_box.clear();
+		}
+	}
+	else if (keyPressed->scancode == sf::Keyboard::Scancode::Down) {
+		if (!selection_box.is_active()) {
+			caret.move_down();
+		}
+		else {
+			caret.move(selection_box.get_last());
+			caret.move_down();
+			selection_box.clear();
+		}
+	}
+	else if (keyPressed->scancode == sf::Keyboard::Scancode::Up) {
+		if (!selection_box.is_active()) {
+			caret.move_up();
+		}
+		else {
+			caret.move(selection_box.get_first());
+			caret.move_up();
+			selection_box.clear();
+		}
+	}
+}
+
+void Screen::type_char(char c) {
+
+	if (selection_box.is_active()) {
+		delete_selection();
+	}
+
+	buffer.insert(c, caret.get_pos());
+
+	update_text();
+	caret.move_right();
 }
 
 void Screen::delete_selection() {
@@ -323,11 +327,23 @@ int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
 	}
 
 	// Step 2: Use the line number, the start index of that line, and the size of the line to
-	// calculate the index
+	// calculate the index. Go through each char in the line until it reaches the world x to
+	// get the char_index_in_line.
 
 	//... 0 for the first char of each line, 1 for the second, and so on
-	int char_index_in_line = round(((float)world_pos.x) / CHARACTER_WIDTH);
-	char_index_in_line = clamp(char_index_in_line, 0, chars_in_line);
+	int char_index_in_line;
+
+	int current_x = 0;
+	for (char_index_in_line = 0; char_index_in_line < chars_in_line; char_index_in_line++) {
+		int char_index = line_start_index + char_index_in_line;
+
+		int cur_char_width = text.at(char_index) == '\t' ? TAB_WIDTH : CHARACTER_WIDTH;
+		current_x += cur_char_width;
+
+		if (current_x > world_pos.x + (cur_char_width / 2.f)) {
+			break;
+		}
+	}
 
 	return line_start_index + char_index_in_line;
 }

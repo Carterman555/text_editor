@@ -12,7 +12,7 @@ void SelectionBox::create(int start, int end) {
 
     this->start = start;
     this->end = end;
-    
+
     int str_len = text.getString().getSize();
     start = std::clamp(start, 0, str_len);
     end = std::clamp(end, 0, str_len);
@@ -45,10 +45,10 @@ void SelectionBox::setup_shapes() {
 
     // the index in the str where the selection starts in the previous or current line
     int prev_start_str_index = first;
-    
+
     int shape_index = 0;
-    
-    // the number of characters that are within the selection in the previous or current line
+
+    // the world length of the selection in the previous or current line
     int line_selection_length = 0;
 
     for (int str_index = first; str_index <= last; str_index++) {
@@ -67,18 +67,19 @@ void SelectionBox::setup_shapes() {
             if (shape_index >= shapes.size()) {
                 shapes.push_back(std::make_unique<sf::RectangleShape>());
             }
-            
-            shapes.at(shape_index)->setSize(sf::Vector2f(line_selection_length * CHARACTER_WIDTH, FONT_SIZE));
+
+            shapes.at(shape_index)->setSize(sf::Vector2f(line_selection_length, FONT_SIZE));
             shapes.at(shape_index)->setPosition(text.findCharacterPos(prev_start_str_index) + TEXT_SHAPE_OFFSET);
             shapes.at(shape_index)->setFillColor(sf::Color(103, 190, 217, 100));
-            
+
             shape_index++;
 
             prev_start_str_index = str_index + 1;
             line_selection_length = 0;
         }
         else {
-            line_selection_length++;
+            int cur_char_width = str.at(str_index) == '\t' ? TAB_WIDTH : CHARACTER_WIDTH;
+            line_selection_length += cur_char_width;
         }
     }
 

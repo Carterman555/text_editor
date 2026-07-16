@@ -1,10 +1,15 @@
-Features I'm going to start with:
-- reading from and writing to a file
-- copy and paste?
-
+Todo
+- fix tab messing up selection box
+- check if need to fix tab in other areas
+- filter what characters can paste, and make them the ? character if can't
+- fix selection being slow with a lot of text
+- ctrl a
+- scroll bar areas still interfere with selecting text and moving carot. Fix this
+- double click to selection word and triple click to selection line?
 
 Classes:
 
 
 
 Changes since last commit:
+- 

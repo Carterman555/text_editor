@@ -22,9 +22,11 @@ public:
 
     void handle_events();
 
-    void on_key_pressed(sf::Keyboard::Scancode scancode);
+    void on_key_pressed(const sf::Event::KeyPressed* keyPressed);
+    void handle_commands(const sf::Event::KeyPressed* keyPressed);
+    void handle_arrow_keys(const sf::Event::KeyPressed* keyPressed);
 
-    void on_text_entered(int unicode);
+    void type_char(char c);
 
     void delete_selection();
 
@@ -33,6 +35,9 @@ public:
 
     // Set sf::Text string to buffer text, then update the scroll view content size
     void update_text() {
+
+        sf::Clock clock;
+
         text.setString(buffer.get_display_str());
 
         sf::Vector2f padding = { 5, 5 };
