@@ -1,7 +1,4 @@
 Todo
-- fix tab messing up selection box
-- check if need to fix tab in other areas
-- filter what characters can paste, and make them the ? character if can't
 - fix selection being slow with a lot of text
 - ctrl a
 - scroll bar areas still interfere with selecting text and moving carot. Fix this

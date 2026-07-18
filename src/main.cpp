@@ -11,9 +11,10 @@ int main(int argc, char* argv[]) {
 	if (argc == 2) {
 		if (auto text = FileHandler::read_text_file(argv[1])) {
 			contents = *text;
+			cout << contents << endl;
 		}
-		else { 
-	 		cerr << "Error: failed to read text file (" << argv[1] << ")!" << endl;
+		else {
+			cerr << "Error: failed to read text file (" << argv[1] << ")!" << endl;
 			return 1;
 		}
 	}

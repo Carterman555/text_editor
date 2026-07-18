@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bits/stdc++.h>
+#include <optional>
 #include <SFML/Graphics.hpp>
 
 #include "gapbuffer.hpp"
@@ -20,13 +21,20 @@ public:
 
     void run_window();
 
+
+private:
+
     void handle_events();
 
     void on_key_pressed(const sf::Event::KeyPressed* keyPressed);
     void handle_commands(const sf::Event::KeyPressed* keyPressed);
     void handle_arrow_keys(const sf::Event::KeyPressed* keyPressed);
 
-    void type_char(char c);
+    void type_char(char32_t c);
+
+    // Filter out the characters that the text editor allows. Also handle return by using '\n'
+    // instead of '\r'.
+    const std::optional<char32_t> get_valid_char(int unicode) const;
 
     void delete_selection();
 
@@ -61,7 +69,6 @@ public:
     }
 
 
-private:
     std::function<void(string)> on_save;
 
     GapBuffer buffer;

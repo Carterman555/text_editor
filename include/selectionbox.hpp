@@ -13,19 +13,15 @@ public:
     SelectionBox(const sf::Text& text);
 
     /**
-     * @brief Creates the selection with a start and end positions
+     * @brief Set the selection box to the given positions. Creates the selection with a start and
+     * end positions if it inactive.
+     *
      * @param start The character index of the side of the selection without the caret
      * @param end The character index of the side of the selection with the caret
      *
      * start can be greater than end
      */
-    void create(int start, int end);
-
-    /**
-     * @brief Moves the end position of the selection (the side with the caret)
-     * @param pos The new end index
-     */
-    void move_end(int pos);
+    void set_position(int start, int end);
 
     /**
      * @brief Removes the selection box
@@ -40,7 +36,7 @@ public:
 
     std::string get_selection() {
         std::string str = text.getString();
-        return std::string(str.begin() + get_first(), str.begin() + get_last());
+        return str.substr(get_first(), get_last());
     }
 
     int get_start() {

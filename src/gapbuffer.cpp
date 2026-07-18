@@ -4,12 +4,12 @@
 
 GapBuffer::GapBuffer(int init_gap_size) {
     this->init_gap_size = init_gap_size;
-    buffer = std::vector<char>(init_gap_size, '\0');
+    buffer = std::vector<char32_t>(init_gap_size, '\0');
     gap_left = 0;
     gap_right = init_gap_size - 1;
 }
 
-void GapBuffer::insert(char c, int position) {
+void GapBuffer::insert(char32_t c, int position) {
     if (gap_left > gap_right) {
         buffer.insert(buffer.begin() + gap_left, init_gap_size, '\0');
         gap_right += init_gap_size;

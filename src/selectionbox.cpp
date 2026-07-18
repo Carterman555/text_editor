@@ -8,7 +8,11 @@ using namespace Constants;
 SelectionBox::SelectionBox(const sf::Text& text) : text(text) {
 }
 
-void SelectionBox::create(int start, int end) {
+void SelectionBox::set_position(int start, int end) {
+
+    if (this->start == start && this->end == end) {
+        return;
+    }
 
     this->start = start;
     this->end = end;
@@ -25,10 +29,6 @@ void SelectionBox::create(int start, int end) {
     setup_shapes();
 }
 
-void SelectionBox::move_end(int pos) {
-    end = pos;
-}
-
 void SelectionBox::clear() {
     start = -1;
     end = -1;
@@ -39,6 +39,25 @@ void SelectionBox::clear() {
 void SelectionBox::setup_shapes() {
 
     std::string str = text.getString();
+
+
+
+    sf::Clock clock;
+
+    text.findCharacterPos(1);
+
+    std::cout << "Time to find char at index 1: " << clock.restart().asMicroseconds() << std::endl;
+
+    text.findCharacterPos(20000);
+
+    std::cout << "Time to find char at index 20,000: " << clock.restart().asMicroseconds() << std::endl;
+
+    int count = 0;
+    for (char c : str) {
+        count++;
+    }
+
+    std::cout << "Time to loop through text" << clock.restart().asMicroseconds() << std::endl;
 
     int first = std::min(start, end);
     int last = std::max(start, end);
@@ -87,4 +106,6 @@ void SelectionBox::setup_shapes() {
     while (shapes.size() > shape_index) {
         shapes.erase(shapes.begin() + shapes.size() - 1);
     }
+
+    std::cout << clock.getElapsedTime().asMilliseconds() << std::endl;
 }

@@ -63,11 +63,8 @@ void Screen::handle_events() {
 			on_key_pressed(keyPressed);
 		}
 		else if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
-			if (textEntered->unicode == 9 || (textEntered->unicode >= 32 && textEntered->unicode < 127)) {
-				type_char(static_cast<char>(textEntered->unicode));
-			}
-			else if (textEntered->unicode == 13) {
-				type_char('\n');
+			if (const auto c = get_valid_char(textEntered->unicode)) {
+				type_char(*c);
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseMoved>()) {
@@ -77,8 +74,7 @@ void Screen::handle_events() {
 				int desired_caret_pos = pos_to_char_index(mouseData->position);
 				caret.move(desired_caret_pos);
 
-				selection_box.clear();
-				selection_box.create(selection_start_index, caret.get_pos());
+				selection_box.set_position(selection_start_index, caret.get_pos());
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
@@ -179,7 +175,13 @@ void Screen::handle_commands(const sf::Event::KeyPressed* keyPressed) {
 
 		string clipboard = sf::Clipboard::getString();
 		for (int i = 0; i < clipboard.size(); i++) {
-			buffer.insert(clipboard.at(i), caret.get_pos() + i);
+			int unicode = clipboard.at(i);
+			if (auto c = get_valid_char(unicode)) {
+				buffer.insert(*c, caret.get_pos() + i);
+			}
+			else {
+				buffer.insert(U'\uFFFD', caret.get_pos() + i);
+			}
 		}
 
 		update_text();
@@ -198,22 +200,22 @@ void Screen::handle_arrow_keys(const sf::Event::KeyPressed* keyPressed) {
 	if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Left) {
 		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
 		caret.move_left();
-		selection_box.create(selection_start, caret.get_pos());
+		selection_box.set_position(selection_start, caret.get_pos());
 	}
 	else if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Right) {
 		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
 		caret.move_right();
-		selection_box.create(selection_start, caret.get_pos());
+		selection_box.set_position(selection_start, caret.get_pos());
 	}
 	else if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Up) {
 		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
 		caret.move_up();
-		selection_box.create(selection_start, caret.get_pos());
+		selection_box.set_position(selection_start, caret.get_pos());
 	}
 	else if (keyPressed->shift && keyPressed->scancode == sf::Keyboard::Scancode::Down) {
 		int selection_start = selection_box.is_active() ? selection_box.get_start() : caret.get_pos();
 		caret.move_down();
-		selection_box.create(selection_start, caret.get_pos());
+		selection_box.set_position(selection_start, caret.get_pos());
 	}
 	else if (keyPressed->scancode == sf::Keyboard::Scancode::Left) {
 		if (!selection_box.is_active()) {
@@ -255,7 +257,7 @@ void Screen::handle_arrow_keys(const sf::Event::KeyPressed* keyPressed) {
 	}
 }
 
-void Screen::type_char(char c) {
+void Screen::type_char(char32_t c) {
 
 	if (selection_box.is_active()) {
 		delete_selection();
@@ -265,6 +267,18 @@ void Screen::type_char(char c) {
 
 	update_text();
 	caret.move_right();
+}
+
+const std::optional<char32_t> Screen::get_valid_char(int unicode) const {
+	if (unicode == 9 || unicode == 10 || (unicode >= 32 && unicode < 127)) {
+		return (char32_t)unicode;
+	}
+	else if (unicode == 13) {
+		return '\n';
+	}
+	else {
+		return std::nullopt;
+	}
 }
 
 void Screen::delete_selection() {
