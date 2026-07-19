@@ -4,7 +4,7 @@
 
 GapBuffer::GapBuffer(int init_gap_size) {
     this->init_gap_size = init_gap_size;
-    buffer = std::vector<char32_t>(init_gap_size, '\0');
+    buffer = std::vector<char>(init_gap_size, '\0');
     gap_left = 0;
     gap_right = init_gap_size - 1;
 }
@@ -21,6 +21,8 @@ void GapBuffer::insert(char32_t c, int position) {
 
     buffer.at(gap_left) = c;
     gap_left++;
+
+    dirty = true;
 }
 
 void GapBuffer::remove(int position) {
@@ -35,6 +37,8 @@ void GapBuffer::remove(int position) {
 
     gap_left--;
     buffer.at(gap_left) = '\0';
+
+    dirty = true;
 }
 
 void GapBuffer::move_gap(int position) {
@@ -68,17 +72,22 @@ void GapBuffer::move_gap(int position) {
     }
 }
 
-std::string GapBuffer::get_display_str() {
+const std::string& GapBuffer::get_display_str() {
 
-    std::string str;
+    if (!dirty) {
+        return display_str;
+    }
 
+    display_str.clear();
     for (size_t i = 0; i < buffer.size(); i++) {
         if (buffer.at(i) != '\0') {
-            str.push_back(buffer.at(i));
+            display_str.push_back(buffer.at(i));
         }
     }
 
-    return str;
+    dirty = false;
+
+    return display_str;
 }
 
 std::string GapBuffer::get_str() {

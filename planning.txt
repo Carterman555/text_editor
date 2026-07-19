@@ -1,5 +1,6 @@
 Todo
 - fix selection being slow with a lot of text
+- make sure not using string where you can use string&
 - ctrl a
 - scroll bar areas still interfere with selecting text and moving carot. Fix this
 - double click to selection word and triple click to selection line?

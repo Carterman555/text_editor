@@ -10,7 +10,7 @@
  */
 class GapBuffer {
 public:
-    GapBuffer(int init_gap_size = 20);
+    GapBuffer(int init_gap_size = 50);
 
     /**
      * @brief Insert a character at the position
@@ -28,7 +28,7 @@ public:
     /**
      * @brief Get the string of the buffer without the gap
      */
-    std::string get_display_str();
+    const std::string& get_display_str();
 
     // Methods for Testing
 
@@ -38,13 +38,17 @@ public:
     std::string get_str();
 
 private:
-    std::vector<char32_t> buffer;
+    std::vector<char> buffer;
     int gap_left;
     int gap_right;
 
     // the initial size of the vector and the size of the gap inserted each time the gap is filled
     // with characters
     int init_gap_size;
+
+    // for memoization on get_display_str()
+    std::string display_str;
+    bool dirty = true;
 
     /**
      * @brief Move the buffer to the given index to begin inserting characters at that position

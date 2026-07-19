@@ -30,7 +30,7 @@ std::optional<string> FileHandler::read_text_file(string file_path) {
     return contents;
 }
 
-bool FileHandler::write_text_file(string file_path, string text) {
+bool FileHandler::write_text_file(string file_path, const string& text) {
     fstream file(file_path, ios::out);
 
     if (!file.is_open()) {

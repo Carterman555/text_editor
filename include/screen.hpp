@@ -8,6 +8,7 @@
 #include "caret.hpp"
 #include "selectionbox.hpp"
 #include "scroll_view.hpp"
+#include "helpers.hpp"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ class Screen {
 public:
     Screen(string contents = "");
 
-    void set_on_save(std::function<void(string)> callback) {
+    void set_on_save(std::function<void(const string&)> callback) {
         on_save = callback;
     }
 
@@ -38,9 +39,6 @@ private:
 
     void delete_selection();
 
-    // Get the index in the buffer of the character given a screen position
-    int pos_to_char_index(sf::Vector2i screen_pos);
-
     // Set sf::Text string to buffer text, then update the scroll view content size
     void update_text() {
 
@@ -55,21 +53,38 @@ private:
     }
 
     int get_num_lines() {
-        string str = text.getString();
+        const string& str = buffer.get_display_str();
         int return_count = count(str.begin(), str.end(), '\n');
         int num_lines = return_count + 1;
         return num_lines;
     }
 
-    void ensure_caret_visible(int pos) {
-        sf::Vector2f char_pos = text.findCharacterPos(pos);
+    void ensure_caret_visible(sf::Vector2f char_pos) {
         sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
         sf::Vector2f padding = { CHARACTER_WIDTH * 1.5, LINE_HEIGHT * 2.5 };
         scroll_view.scroll_to_show_pos(char_center, padding);
     }
 
+    void test_find_char_pos(ulong index) {
 
-    std::function<void(string)> on_save;
+        sf::Clock clock;
+
+        sf::Vector2f built_in_method_pos = text.findCharacterPos(index);
+
+        cout << "text.findCharacterPos(index): " << clock.restart().asMicroseconds() << endl;
+
+        const string& str = buffer.get_display_str();
+
+        cout << "buffer.get_display_string(): " << clock.restart().asMicroseconds() << endl;
+
+        sf::Vector2f my_method_pos = Helpers::char_index_to_pos(str, index);
+
+        cout << "Helpers::char_index_to_pos(str, index): " << clock.restart().asMicroseconds() << endl;
+        cout << endl;
+    }
+
+
+    std::function<void(const string&)> on_save;
 
     GapBuffer buffer;
 

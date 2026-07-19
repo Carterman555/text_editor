@@ -1,5 +1,7 @@
 #pragma once
 
+#include "gapbuffer.hpp"
+
 #include <bits/stdc++.h>
 #include <vector>
 #include <SFML/Graphics.hpp>
@@ -10,7 +12,7 @@
 class SelectionBox {
 public:
 
-    SelectionBox(const sf::Text& text);
+    SelectionBox(GapBuffer& buffer);
 
     /**
      * @brief Set the selection box to the given positions. Creates the selection with a start and
@@ -35,7 +37,7 @@ public:
     }
 
     std::string get_selection() {
-        std::string str = text.getString();
+        const std::string& str = buffer.get_display_str();
         return str.substr(get_first(), get_last());
     }
 
@@ -73,7 +75,7 @@ private:
 
     std::vector<std::unique_ptr<sf::RectangleShape>> shapes;
 
-    const sf::Text& text;
+    GapBuffer& buffer;
 
     /**
      * @brief Create and arrange the box selection rectangle shapes

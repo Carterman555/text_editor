@@ -14,5 +14,5 @@ public:
      *
      * @return whether successfully wrote to file
      */
-    static bool write_text_file(string file_path, string text);
+    static bool write_text_file(string file_path, const string& text);
 };

@@ -11,7 +11,6 @@ int main(int argc, char* argv[]) {
 	if (argc == 2) {
 		if (auto text = FileHandler::read_text_file(argv[1])) {
 			contents = *text;
-			cout << contents << endl;
 		}
 		else {
 			cerr << "Error: failed to read text file (" << argv[1] << ")!" << endl;
@@ -26,7 +25,7 @@ int main(int argc, char* argv[]) {
 	Screen screen(contents);
 
 	if (argc == 2) {
-		screen.set_on_save([argv](string contents) {
+		screen.set_on_save([argv](const string& contents) {
 			FileHandler::write_text_file(argv[1], contents);
 			});
 	}

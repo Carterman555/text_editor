@@ -5,26 +5,28 @@
 
 using namespace std;
 
-Caret::Caret(const sf::Text& text) : shape(sf::Vector2f(2, FONT_SIZE)), text(text) {
+Caret::Caret(GapBuffer& buffer) : shape(sf::Vector2f(2, FONT_SIZE)), buffer(buffer) {
     shape.setPosition(TEXT_SHAPE_OFFSET);
 }
 
-void Caret::move(int pos) {
+sf::Vector2f Caret::move(int pos) {
 
     horizontal_pos = 0;
 
     if (this->pos == pos) {
-        return;
+        return char_pos;
     }
 
     this->pos = pos;
 
-    update_shape_pos();
+    char_pos = update_shape_pos();
 
-    if (on_move) on_move(pos);
+    if (on_move) on_move(char_pos);
+
+    return char_pos;
 }
 
-void Caret::move_left() {
+sf::Vector2f Caret::move_left() {
 
     pos--;
     if (pos < 0) {
@@ -32,26 +34,30 @@ void Caret::move_left() {
     }
 
     horizontal_pos = 0;
-    update_shape_pos();
+    char_pos = update_shape_pos();
 
-    if (on_move) on_move(pos);
+    if (on_move) on_move(char_pos);
+
+    return char_pos;
 }
 
-void Caret::move_right() {
+sf::Vector2f Caret::move_right() {
     pos++;
-    int char_count = text.getString().getSize();
+    int char_count = buffer.get_display_str().size();
     if (pos > char_count) {
         pos = char_count;
     }
 
     horizontal_pos = 0;
-    update_shape_pos();
+    char_pos = update_shape_pos();
 
-    if (on_move) on_move(pos);
+    if (on_move) on_move(char_pos);
+
+    return char_pos;
 }
 
-void Caret::move_down() {
-    string str = text.getString();
+sf::Vector2f Caret::move_down() {
+    const string& str = buffer.get_display_str();
 
     // First get the pos_in_line, which is the horizontal position of the caret. It is the amount
     // of characters before the caret in the line.	
@@ -79,11 +85,11 @@ void Caret::move_down() {
         if (end_of_text) {
             pos = str.length();
 
-            update_shape_pos();
+            char_pos = update_shape_pos();
 
-            if (on_move) on_move(pos);
+            if (on_move) on_move(char_pos);
 
-            return;
+            return char_pos;
         }
 
         j++;
@@ -99,14 +105,16 @@ void Caret::move_down() {
         }
     }
 
-    update_shape_pos();
+    char_pos = update_shape_pos();
 
-    if (on_move) on_move(pos);
+    if (on_move) on_move(char_pos);
+
+    return char_pos;
 }
 
-void Caret::move_up() {
+sf::Vector2f Caret::move_up() {
 
-    string str = text.getString();
+    const string& str = buffer.get_display_str();
 
     // First get the pos_in_line, which is the horizontal position of the caret. It is the amount
     // of characters before the caret in the line.	
@@ -120,11 +128,11 @@ void Caret::move_up() {
         if (i <= 0) {
             horizontal_pos = 0;
             pos = 0;
-            update_shape_pos();
+            char_pos = update_shape_pos();
 
-            if (on_move) on_move(pos);
+            if (on_move) on_move(char_pos);
 
-            return;
+            return char_pos;
         }
     }
 
@@ -158,9 +166,11 @@ void Caret::move_up() {
         }
     }
 
-    update_shape_pos();
+    char_pos = update_shape_pos();
 
-    if (on_move) on_move(pos);
+    if (on_move) on_move(char_pos);
+
+    return char_pos;
 }
 
 void Caret::update() {

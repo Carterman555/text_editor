@@ -2,10 +2,11 @@
 
 #include "selectionbox.hpp"
 #include "constants.hpp"
+#include "helpers.hpp"
 
 using namespace Constants;
 
-SelectionBox::SelectionBox(const sf::Text& text) : text(text) {
+SelectionBox::SelectionBox(GapBuffer& buffer) : buffer(buffer) {
 }
 
 void SelectionBox::set_position(int start, int end) {
@@ -17,7 +18,7 @@ void SelectionBox::set_position(int start, int end) {
     this->start = start;
     this->end = end;
 
-    int str_len = text.getString().getSize();
+    int str_len = buffer.get_display_str().size();
     start = std::clamp(start, 0, str_len);
     end = std::clamp(end, 0, str_len);
 
@@ -38,37 +39,22 @@ void SelectionBox::clear() {
 
 void SelectionBox::setup_shapes() {
 
-    std::string str = text.getString();
-
-
-
-    sf::Clock clock;
-
-    text.findCharacterPos(1);
-
-    std::cout << "Time to find char at index 1: " << clock.restart().asMicroseconds() << std::endl;
-
-    text.findCharacterPos(20000);
-
-    std::cout << "Time to find char at index 20,000: " << clock.restart().asMicroseconds() << std::endl;
-
-    int count = 0;
-    for (char c : str) {
-        count++;
-    }
-
-    std::cout << "Time to loop through text" << clock.restart().asMicroseconds() << std::endl;
+    std::string str = buffer.get_display_str();
 
     int first = std::min(start, end);
     int last = std::max(start, end);
 
-    // the index in the str where the selection starts in the previous or current line
     int prev_start_str_index = first;
 
     int shape_index = 0;
 
     // the world length of the selection in the previous or current line
     int line_selection_length = 0;
+
+    // The world position where the selection starts in the previous or current line
+    // Only find the character pos once to increase performance. Then keep track of it while
+    // iterating through str.
+    sf::Vector2f line_char_pos = Helpers::char_index_to_pos(str, first);
 
     for (int str_index = first; str_index <= last; str_index++) {
 
@@ -88,13 +74,15 @@ void SelectionBox::setup_shapes() {
             }
 
             shapes.at(shape_index)->setSize(sf::Vector2f(line_selection_length, FONT_SIZE));
-            shapes.at(shape_index)->setPosition(text.findCharacterPos(prev_start_str_index) + TEXT_SHAPE_OFFSET);
+            shapes.at(shape_index)->setPosition(line_char_pos + TEXT_SHAPE_OFFSET);
             shapes.at(shape_index)->setFillColor(sf::Color(103, 190, 217, 100));
 
             shape_index++;
 
             prev_start_str_index = str_index + 1;
             line_selection_length = 0;
+            line_char_pos.x = 0; // the selection always starts at the beginning of each new line
+            line_char_pos.y += LINE_HEIGHT;
         }
         else {
             int cur_char_width = str.at(str_index) == '\t' ? TAB_WIDTH : CHARACTER_WIDTH;
@@ -106,6 +94,4 @@ void SelectionBox::setup_shapes() {
     while (shapes.size() > shape_index) {
         shapes.erase(shapes.begin() + shapes.size() - 1);
     }
-
-    std::cout << clock.getElapsedTime().asMilliseconds() << std::endl;
 }

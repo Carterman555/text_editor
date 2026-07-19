@@ -3,15 +3,14 @@
 #include "screen.hpp"
 #include "filehandler.hpp"
 #include "constants.hpp"
-#include "logger.hpp"
 
 using namespace Constants;
 
 Screen::Screen(string contents) : buffer(),
 font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
 text(font),
-caret(text),
-selection_box(text),
+caret(buffer),
+selection_box(buffer),
 window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
 scroll_view(window) {
 
@@ -25,7 +24,7 @@ scroll_view(window) {
 	}
 	update_text();
 
-	caret.set_on_move([this](int pos) {ensure_caret_visible(pos);});
+	caret.set_on_move([this](sf::Vector2f char_pos) {ensure_caret_visible(char_pos);});
 }
 
 void Screen::run_window() {
@@ -71,10 +70,21 @@ void Screen::handle_events() {
 			bool drag_scrolling = scroll_view.get_scroll_bar(Axis::X).is_dragging() || scroll_view.get_scroll_bar(Axis::Y).is_dragging();
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !drag_scrolling) {
 
-				int desired_caret_pos = pos_to_char_index(mouseData->position);
-				caret.move(desired_caret_pos);
+				sf::Vector2f mouse_pos = window.mapPixelToCoords(mouseData->position, scroll_view.get_content_view());
+
+				int desired_caret_pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
+
+				sf::Clock clock;
+
+				sf::Vector2f char_pos = caret.move(desired_caret_pos);
+
+				cout << "Move caret: " << clock.restart().asMicroseconds() << endl;
 
 				selection_box.set_position(selection_start_index, caret.get_pos());
+
+				cout << "selection_box.set_position: " << clock.restart().asMicroseconds() << endl;
+
+				cout << endl;
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
@@ -87,7 +97,8 @@ void Screen::handle_events() {
 					scroll_view.get_scroll_bar(Axis::Y).start_dragging_scroll_bar();
 				}
 				else {
-					int desired_caret_pos = pos_to_char_index(mouseData->position);
+					sf::Vector2f mouse_pos = window.mapPixelToCoords(mouseData->position, scroll_view.get_content_view());
+					int desired_caret_pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
 					caret.move(desired_caret_pos);
 
 					selection_start_index = caret.get_pos();
@@ -145,7 +156,7 @@ void Screen::on_key_pressed(const sf::Event::KeyPressed* keyPressed) {
 			return;
 		}
 
-		if (caret.get_pos() >= text.getString().getSize()) {
+		if (caret.get_pos() >= buffer.get_display_str().size()) {
 			return;
 		}
 
@@ -193,6 +204,15 @@ void Screen::handle_commands(const sf::Event::KeyPressed* keyPressed) {
 	}
 	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::Equal) {
 		scroll_view.zoom_in();
+	}
+	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::T) {
+
+		test_find_char_pos(0);
+		test_find_char_pos(100);
+		test_find_char_pos(1000);
+		test_find_char_pos(10000);
+		test_find_char_pos(50000);
+		test_find_char_pos(buffer.get_display_str().size() - 1);
 	}
 }
 
@@ -296,68 +316,3 @@ void Screen::delete_selection() {
 	update_text();
 }
 
-int Screen::pos_to_char_index(sf::Vector2i screen_pos) {
-
-	sf::Vector2f world_pos = window.mapPixelToCoords(screen_pos, scroll_view.get_content_view());
-
-	// Step 1: Get the line number, the start index of that line, and the size of the line
-	int line_number = ceil(world_pos.y / LINE_HEIGHT);
-
-	if (line_number < 1) {
-		line_number = 1;
-	}
-
-	int line_counter = 0;
-	std::string text = buffer.get_display_str();
-
-	int line_start_index = 0;
-	int chars_in_line = 0;
-
-	bool reached_line_num = false;
-
-	std::stringstream stream(text);
-	std::string line;
-	while (getline(stream, line, '\n')) { // loop through each line
-
-		chars_in_line = line.size();
-
-		line_counter++;
-		if (line_counter >= line_number) {
-			reached_line_num = true;
-			break;
-		}
-
-		line_start_index += chars_in_line + 1;
-	}
-
-	// If the line number was not reached this means the cursor position was below the last line.
-	// When this happens, it always move the caret to after the last character
-	if (!reached_line_num) {
-		return text.size();
-	}
-
-	if (line_number > line_counter) {
-		line_number = line_counter;
-	}
-
-	// Step 2: Use the line number, the start index of that line, and the size of the line to
-	// calculate the index. Go through each char in the line until it reaches the world x to
-	// get the char_index_in_line.
-
-	//... 0 for the first char of each line, 1 for the second, and so on
-	int char_index_in_line;
-
-	int current_x = 0;
-	for (char_index_in_line = 0; char_index_in_line < chars_in_line; char_index_in_line++) {
-		int char_index = line_start_index + char_index_in_line;
-
-		int cur_char_width = text.at(char_index) == '\t' ? TAB_WIDTH : CHARACTER_WIDTH;
-		current_x += cur_char_width;
-
-		if (current_x > world_pos.x + (cur_char_width / 2.f)) {
-			break;
-		}
-	}
-
-	return line_start_index + char_index_in_line;
-}
