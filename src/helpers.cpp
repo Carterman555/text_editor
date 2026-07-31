@@ -79,12 +79,12 @@ sf::Vector2f Helpers::char_index_to_pos(const std::string& text, ulong index) {
 	sf::Vector2f world_pos = { 0, 0 };
 
 	for (ulong i = 0; i < index; i++) {
-		if (text.at(i) == '\t') {
-			world_pos.x += TAB_WIDTH;
-		}
-		else if (text.at(i) == '\n') {
+		if (text.at(i) == '\n') {
 			world_pos.x = 0;
 			world_pos.y += LINE_HEIGHT;
+		}
+		else if (text.at(i) == '\t') {
+			world_pos.x += TAB_WIDTH;
 		}
 		else {
 			world_pos.x += CHARACTER_WIDTH;
@@ -92,5 +92,30 @@ sf::Vector2f Helpers::char_index_to_pos(const std::string& text, ulong index) {
 	}
 
 	return world_pos;
+}
+
+sf::Vector2f Helpers::find_text_area_size(const std::string& text) {
+    sf::Vector2f size = {0, LINE_HEIGHT};
+
+	float current_width = 0;
+
+	for (size_t i = 0; i < text.size(); i++) {
+		if (text.at(i) == '\n') {
+			size.y += LINE_HEIGHT;
+			current_width = 0;
+		}
+		else if (text.at(i) == '\t') {
+			current_width += TAB_WIDTH;
+		}
+		else {
+			current_width += CHARACTER_WIDTH;
+		}
+
+		if (current_width > size.x) {
+			size.x = current_width;
+		}
+	}
+
+	return size;
 }
 

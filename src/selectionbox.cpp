@@ -39,7 +39,7 @@ void SelectionBox::clear() {
 
 void SelectionBox::setup_shapes() {
 
-    std::string str = buffer.get_display_str();
+    const std::string& str = buffer.get_display_str();
 
     int first = std::min(start, end);
     int last = std::max(start, end);

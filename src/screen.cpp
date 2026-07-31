@@ -6,7 +6,7 @@
 
 using namespace Constants;
 
-Screen::Screen(string contents) : buffer(),
+Screen::Screen(const string& contents) : buffer(),
 font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
 text(font),
 caret(buffer),
@@ -42,7 +42,6 @@ void Screen::run_window() {
 		selection_box.draw(window);
 		window.draw(text);
 		caret.draw(window);
-
 		scroll_view.draw();
 
 		window.display();
@@ -73,18 +72,9 @@ void Screen::handle_events() {
 				sf::Vector2f mouse_pos = window.mapPixelToCoords(mouseData->position, scroll_view.get_content_view());
 
 				int desired_caret_pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
-
-				sf::Clock clock;
-
 				sf::Vector2f char_pos = caret.move(desired_caret_pos);
 
-				cout << "Move caret: " << clock.restart().asMicroseconds() << endl;
-
 				selection_box.set_position(selection_start_index, caret.get_pos());
-
-				cout << "selection_box.set_position: " << clock.restart().asMicroseconds() << endl;
-
-				cout << endl;
 			}
 		}
 		else if (const auto* mouseData = event->getIf<sf::Event::MouseButtonPressed>()) {
@@ -204,15 +194,6 @@ void Screen::handle_commands(const sf::Event::KeyPressed* keyPressed) {
 	}
 	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::Equal) {
 		scroll_view.zoom_in();
-	}
-	else if (keyPressed->control && keyPressed->scancode == sf::Keyboard::Scancode::T) {
-
-		test_find_char_pos(0);
-		test_find_char_pos(100);
-		test_find_char_pos(1000);
-		test_find_char_pos(10000);
-		test_find_char_pos(50000);
-		test_find_char_pos(buffer.get_display_str().size() - 1);
 	}
 }
 

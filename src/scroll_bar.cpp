@@ -55,10 +55,16 @@ float ScrollBar::world_pos_to_ratio(int world_pos) const {
 void ScrollBar::draw(float size_ratio, float pos_ratio) {
 
     float scroll_bar_length = along(WINDOW_SIZE) * size_ratio;
+    float min_scroll_bar_length = 3.f;
+    scroll_bar_length = std::max(scroll_bar_length, min_scroll_bar_length);
     shape.setSize(make_vec(scroll_bar_length, width));
 
-    float pos = along(WINDOW_SIZE) * (1 - size_ratio) * pos_ratio;
+    // Recalculate the size ratio after ensuring scroll_bar_length is greater than the min. Does
+    // nothing if scroll_bar_length was already greater than min_scroll_bar_length. Do this to make
+    // sure the pos is correct.
+    size_ratio = scroll_bar_length / along(WINDOW_SIZE);
 
+    float pos = along(WINDOW_SIZE) * (1 - size_ratio) * pos_ratio;
     shape.setPosition(make_vec(pos, 0));
 
     shape.setFillColor(sf::Color(100, 100, 100));

@@ -4,13 +4,13 @@ sf::Clock Logger::clock;
 queue<Log> Logger::log_queue;
 unordered_set<int> Logger::ids;
 
-void Logger::log_delayed(int id, string message) {
+void Logger::log_delayed(int id, string_view message) {
 
     bool already_queued = ids.count(id);
     if (!already_queued) {
         ids.insert(id);
 
-        Log log(id, message);
+        Log log(id, string(message));
         log_queue.push(log);
     }
 

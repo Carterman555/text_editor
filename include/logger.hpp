@@ -21,7 +21,7 @@ struct Log {
 
 class Logger {
 public:
-    static void log_delayed(int id, string message);
+    static void log_delayed(int id, string_view message);
 private:
     static sf::Clock clock;
 

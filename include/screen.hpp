@@ -14,7 +14,7 @@ using namespace std;
 
 class Screen {
 public:
-    Screen(string contents = "");
+    Screen(const string& contents = "");
 
     void set_on_save(std::function<void(const string&)> callback) {
         on_save = callback;
@@ -42,12 +42,10 @@ private:
     // Set sf::Text string to buffer text, then update the scroll view content size
     void update_text() {
 
-        sf::Clock clock;
-
         text.setString(buffer.get_display_str());
 
-        sf::Vector2f padding = { 5, 5 };
-        sf::Vector2f content_size = text.getGlobalBounds().position + text.getGlobalBounds().size + padding;
+        sf::Vector2f padding = { 28, 28 };
+        sf::Vector2f content_size = Helpers::find_text_area_size(buffer.get_display_str()) + padding;
 
         scroll_view.set_content_size((sf::Vector2i)content_size);
     }
@@ -65,30 +63,15 @@ private:
         scroll_view.scroll_to_show_pos(char_center, padding);
     }
 
-    void test_find_char_pos(ulong index) {
-
-        sf::Clock clock;
-
-        sf::Vector2f built_in_method_pos = text.findCharacterPos(index);
-
-        cout << "text.findCharacterPos(index): " << clock.restart().asMicroseconds() << endl;
-
-        const string& str = buffer.get_display_str();
-
-        cout << "buffer.get_display_string(): " << clock.restart().asMicroseconds() << endl;
-
-        sf::Vector2f my_method_pos = Helpers::char_index_to_pos(str, index);
-
-        cout << "Helpers::char_index_to_pos(str, index): " << clock.restart().asMicroseconds() << endl;
-        cout << endl;
-    }
-
-
     std::function<void(const string&)> on_save;
 
     GapBuffer buffer;
 
     sf::Font font;
+
+    // Includes the whole text. If I want to optimize, then I would only include the visible
+    // section of this text and move it based on the scroll. window.draw(text) is costly when
+    // text is large.
     sf::Text text;
 
     Caret caret;
@@ -99,5 +82,6 @@ private:
     sf::RenderWindow window;
 
     ScrollView scroll_view;
-    sf::Vector2i text_area_size;
+
+    bool debug_print_draw_time;
 };
