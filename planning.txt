@@ -1,6 +1,4 @@
 Todo
-- ctrl a
-- scroll bar areas still interfere with selecting text and moving carot. Fix this
 - double click to selection word and triple click to selection line?
 - scrolling to caret is messed up when zoomed in. Fix
 
@@ -9,4 +7,4 @@ Classes:
 
 
 Changes since last commit:
-- 
+- ctrl a

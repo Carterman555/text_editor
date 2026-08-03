@@ -3,6 +3,7 @@
 #include "selectionbox.hpp"
 #include "constants.hpp"
 #include "helpers.hpp"
+#include "logger.hpp"
 
 using namespace Constants;
 

@@ -22,6 +22,7 @@ struct Log {
 class Logger {
 public:
     static void log_delayed(int id, string_view message);
+    static void print_trace();
 private:
     static sf::Clock clock;
 

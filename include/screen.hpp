@@ -9,6 +9,7 @@
 #include "selectionbox.hpp"
 #include "scroll_view.hpp"
 #include "helpers.hpp"
+#include "event_manager.hpp"
 
 using namespace std;
 
@@ -27,15 +28,10 @@ private:
 
     void handle_events();
 
-    void on_key_pressed(const sf::Event::KeyPressed* keyPressed);
-    void handle_commands(const sf::Event::KeyPressed* keyPressed);
-    void handle_arrow_keys(const sf::Event::KeyPressed* keyPressed);
+    void handle_commands(const Event& event);
+    void handle_arrow_keys(const Event& event);
 
     void type_char(char32_t c);
-
-    // Filter out the characters that the text editor allows. Also handle return by using '\n'
-    // instead of '\r'.
-    const std::optional<char32_t> get_valid_char(int unicode) const;
 
     void delete_selection();
 
@@ -59,7 +55,7 @@ private:
 
     void ensure_caret_visible(sf::Vector2f char_pos) {
         sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
-        sf::Vector2f padding = { CHARACTER_WIDTH * 1.5, LINE_HEIGHT * 2.5 };
+        sf::Vector2f padding = { CHARACTER_WIDTH * 1.5f, LINE_HEIGHT * 2.5f };
         scroll_view.scroll_to_show_pos(char_center, padding);
     }
 
@@ -83,5 +79,5 @@ private:
 
     ScrollView scroll_view;
 
-    bool debug_print_draw_time;
+    EventManager event_manager;
 };

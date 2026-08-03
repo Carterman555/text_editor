@@ -95,7 +95,7 @@ sf::Vector2f Helpers::char_index_to_pos(const std::string& text, ulong index) {
 }
 
 sf::Vector2f Helpers::find_text_area_size(const std::string& text) {
-    sf::Vector2f size = {0, LINE_HEIGHT};
+	sf::Vector2f size = { 0, LINE_HEIGHT };
 
 	float current_width = 0;
 
@@ -119,3 +119,14 @@ sf::Vector2f Helpers::find_text_area_size(const std::string& text) {
 	return size;
 }
 
+const std::optional<char32_t> Helpers::get_valid_char(int unicode) {
+	if (unicode == 9 || unicode == 10 || (unicode >= 32 && unicode < 127)) {
+		return (char32_t)unicode;
+	}
+	else if (unicode == 13) {
+		return '\n';
+	}
+	else {
+		return std::nullopt;
+	}
+}

@@ -20,4 +20,8 @@ public:
      * @brief Find the size of the text area based on `text`, character widths, and line heights
      */
     static sf::Vector2f find_text_area_size(const std::string& text);
+
+    // Filter out the characters that the text editor allows. Also handle return by using '\n'
+    // instead of '\r'.
+    static const std::optional<char32_t> get_valid_char(int unicode);
 };

@@ -38,7 +38,7 @@ public:
 
     std::string get_selection() {
         const std::string& str = buffer.get_display_str();
-        return str.substr(get_first(), get_last());
+        return str.substr(get_first(), get_last() - get_first());
     }
 
     int get_start() {
