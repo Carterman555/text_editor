@@ -21,8 +21,16 @@ struct Log {
 
 class Logger {
 public:
+
+    /**
+     * @brief queue the message and only print messages with the same id every second
+     *
+     * This method only works properly if called from an update loop. It limits the message from
+     * being displayed every loop to being displayed every second. The message will be a second
+     * behind.
+     */
     static void log_delayed(int id, string_view message);
-    static void print_trace();
+
 private:
     static sf::Clock clock;
 

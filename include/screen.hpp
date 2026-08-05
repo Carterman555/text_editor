@@ -21,12 +21,14 @@ public:
         on_save = callback;
     }
 
+    // start the update loop which runs the text editor
     void run_window();
-
 
 private:
 
     void handle_events();
+    void handle_commands(const Event& event);
+    void handle_arrow_keys(const Event& event);
 
     /**
      * @brief select the group of the based on the character after the given pos
@@ -41,9 +43,7 @@ private:
     // select the line the given pos is a part of
     void select_line(int pos);
 
-    void handle_commands(const Event& event);
-    void handle_arrow_keys(const Event& event);
-
+    // insert a character at the caret pos and move the caret pos right by one
     void type_char(char32_t c);
 
     void delete_selection();
@@ -59,6 +59,12 @@ private:
         scroll_view.set_content_size((sf::Vector2i)content_size);
     }
 
+    /**
+     * @brief calculate the char index of the mouse position
+     * 
+     * @param local_mouse_pixel_pos Must be the mouse position relative to the top left corner of
+     * the window. The global mouse position won't work.
+     */
     int mouse_text_pos(sf::Vector2i local_mouse_pixel_pos) {
         sf::Vector2f mouse_pos = window.mapPixelToCoords(local_mouse_pixel_pos, scroll_view.get_content_view());
         int pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
@@ -72,6 +78,7 @@ private:
         return num_lines;
     }
 
+    // scroll the screen to ensure the caret is visible in the scroll view (with padding)
     void ensure_caret_visible(sf::Vector2f char_pos) {
         sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
         sf::Vector2f padding = { CHARACTER_WIDTH * 1.5f, LINE_HEIGHT * 2.5f };

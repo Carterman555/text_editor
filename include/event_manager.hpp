@@ -47,10 +47,12 @@ public:
 
     EventManager(sf::RenderWindow& window) : window(window) {}
 
+    // Interpret and return events from sf `window.pollEvent()`
     std::vector<Event> poll_events();
 
 
 private:
+    // Interpret all command events and add them to `events`
     void add_command_events(const sf::Event::KeyPressed* key_pressed, std::vector<Event>& events);
 
     sf::RenderWindow& window;

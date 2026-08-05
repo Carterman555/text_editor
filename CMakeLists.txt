@@ -41,13 +41,6 @@ target_compile_features(main PRIVATE cxx_std_20)
 target_link_libraries(main PRIVATE SFML::Graphics)
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
-add_executable(experimenting
-    src/experimenting.cpp
-)
-target_compile_features(experimenting PRIVATE cxx_std_20)
-target_link_libraries(experimenting PRIVATE SFML::Graphics)
-target_include_directories(experimenting PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
 enable_testing()
 
 add_executable(
