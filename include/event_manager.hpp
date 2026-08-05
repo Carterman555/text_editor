@@ -10,8 +10,14 @@ struct TypeChar { char32_t c; };
 struct MouseMoved { sf::Vector2i position; };
 struct LeftClick { sf::Vector2i position; };
 struct SingleLeftClick { sf::Vector2i position; };
+
+// When the mouse is left clicked twice within a short period of time with the cursor remaining in
+// the same location, a `DoubleLeftClick` event is returned. Likewise with `TripleLeftClick`.
+// If there are 4 clicks in a row, it returns another `DoubleLeftClick` event. 5 in a row returns
+// `TripleLeftClick`, and so on.
 struct DoubleLeftClick { sf::Vector2i position; };
 struct TripleLeftClick { sf::Vector2i position; };
+
 struct LeftReleased {};
 struct MouseWheelScrolled { float delta; bool ctrl; };
 

@@ -28,6 +28,19 @@ private:
 
     void handle_events();
 
+    /**
+     * @brief select the group of the based on the character after the given pos
+     *
+     * 3 Groups: letters + numbers; symbols; whitespace
+     *
+     * Determines which group the character after the caret is a part of, then select the adjacent
+     * characters in that group. If the caret is at the end of the text, just clear the selection.
+     */
+    void select_group(int pos);
+
+    // select the line the given pos is a part of
+    void select_line(int pos);
+
     void handle_commands(const Event& event);
     void handle_arrow_keys(const Event& event);
 
@@ -44,6 +57,12 @@ private:
         sf::Vector2f content_size = Helpers::find_text_area_size(buffer.get_display_str()) + padding;
 
         scroll_view.set_content_size((sf::Vector2i)content_size);
+    }
+
+    int mouse_text_pos(sf::Vector2i local_mouse_pixel_pos) {
+        sf::Vector2f mouse_pos = window.mapPixelToCoords(local_mouse_pixel_pos, scroll_view.get_content_view());
+        int pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
+        return pos;
     }
 
     int get_num_lines() {

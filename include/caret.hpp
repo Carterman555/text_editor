@@ -85,7 +85,7 @@ public:
         return char_pos;
     }
 
-    int get_pos() {
+    int get_pos() const {
         return pos;
     }
 

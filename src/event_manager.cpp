@@ -79,7 +79,7 @@ std::vector<Event> EventManager::poll_events() {
     }
 
     // handle double and triple click
-    if (sequential_clicks > 0 && sequential_click_clock.getElapsedTime().asMilliseconds() > 750) {
+    if (sequential_clicks > 0 && sequential_click_clock.getElapsedTime().asMilliseconds() > 400) {
         sequential_clicks = 0;
         sequential_click_clock.reset();
     }

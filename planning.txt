@@ -1,5 +1,5 @@
 Todo
-- double click to selection word and triple click to selection line?
+- add comments
 - scrolling to caret is messed up when zoomed in. Fix
 
 Classes:

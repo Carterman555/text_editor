@@ -67,10 +67,8 @@ void Screen::handle_events() {
 			bool drag_scrolling = scroll_view.get_scroll_bar(Axis::X).is_dragging() || scroll_view.get_scroll_bar(Axis::Y).is_dragging();
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !drag_scrolling) {
 
-				sf::Vector2f mouse_pos = window.mapPixelToCoords(get<MouseMoved>(event).position, scroll_view.get_content_view());
-
-				int desired_caret_pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
-				sf::Vector2f char_pos = caret.move(desired_caret_pos);
+				int pos = mouse_text_pos(get<MouseMoved>(event).position);
+				sf::Vector2f char_pos = caret.move(pos);
 
 				selection_box.set_position(selection_start_index, caret.get_pos());
 			}
@@ -84,17 +82,19 @@ void Screen::handle_events() {
 			}
 		}
 		else if (holds_alternative<SingleLeftClick>(event)) {
-			sf::Vector2f mouse_pos = window.mapPixelToCoords(get<SingleLeftClick>(event).position, scroll_view.get_content_view());
-			int desired_caret_pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
-
-			caret.move(desired_caret_pos);
+			int pos = mouse_text_pos(get<SingleLeftClick>(event).position);
+			caret.move(pos);
 
 			selection_start_index = caret.get_pos();
 			selection_box.clear();
 		}
 		else if (holds_alternative<DoubleLeftClick>(event)) {
+			int pos = mouse_text_pos(get<DoubleLeftClick>(event).position);
+			select_group(pos);
 		}
 		else if (holds_alternative<TripleLeftClick>(event)) {
+			int pos = mouse_text_pos(get<TripleLeftClick>(event).position);
+			select_line(pos);
 		}
 		else if (holds_alternative<LeftReleased>(event)) {
 			scroll_view.get_scroll_bar(Axis::X).stop_dragging_scroll_bar();
@@ -147,6 +147,77 @@ void Screen::handle_events() {
 		handle_commands(event);
 		handle_arrow_keys(event);
 	}
+}
+
+void Screen::select_group(int pos) {
+
+	const string& text = buffer.get_display_str();
+
+	bool caret_at_end = pos >= text.length();
+	if (caret_at_end) {
+		selection_box.clear();
+		return;
+	}
+
+	// the character after the caret determines the group to select
+	char char_after_caret = text.at(pos);
+
+	unordered_set<char> letters_and_numbers = {
+		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+		'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+		'u', 'v', 'w', 'x', 'y', 'z', '_', '0', '1', '2',
+		'3', '4', '5', '6', '7', '8', '9'
+	};
+
+	unordered_set<char> symbols = {
+		'.', ',', ';', ':', '!', '?', '"', '\'', '(', ')', '[', ']', '{', '}',
+		'<', '>', '/', '\\', '|', '+', '-', '=', '*', '&', '%', '^', '~', '@',
+		'#', '$', '`'
+	};
+
+	unordered_set<char> whitespace = {
+		' ', '\t'
+	};
+
+	unordered_set<char> char_set;
+	if (letters_and_numbers.contains(char_after_caret)) char_set = letters_and_numbers;
+	else if (symbols.contains(char_after_caret)) char_set = symbols;
+	else if (whitespace.contains(char_after_caret)) char_set = whitespace;
+	else char_set = symbols;
+
+	// find the index of the start and end of the selection
+	int start = pos;
+	while (start > 0 && char_set.contains(tolower(text.at(start - 1)))) {
+		start--;
+	}
+
+	int end = pos;
+	while (end < text.length() && char_set.contains(tolower(text.at(end)))) {
+		end++;
+	}
+
+	start = max(start, 0);
+	end = min(end, (int)text.length());
+
+	selection_box.set_position(start, end);
+	caret.move(end);
+}
+
+void Screen::select_line(int pos) {
+	const string& text = buffer.get_display_str();
+
+	int start = pos;
+	while (start > 0 && text.at(start - 1) != '\n') {
+		start--;
+	}
+
+	int end = pos;
+	while (end < text.length() && text.at(end) != '\n') {
+		end++;
+	}
+
+	selection_box.set_position(start, end);
+	caret.move(end);
 }
 
 void Screen::handle_commands(const Event& event) {
@@ -270,4 +341,3 @@ void Screen::delete_selection() {
 
 	update_text();
 }
-
