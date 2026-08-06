@@ -74,7 +74,7 @@ private:
     sf::View content_view;
 
     sf::FloatRect content_view_rect;
-    float zoom = 1; // zoom is greater when more zoomed in
+    float zoom = 1.f; // zoom is greater when more zoomed in
 
     sf::Vector2i content_size = { 0, 0 };
     sf::Vector2i zoomed_content_size = { 0, 0 };

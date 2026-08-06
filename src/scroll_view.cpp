@@ -33,18 +33,26 @@ void ScrollView::scroll_to_show_pos(Axis axis, float pos, float padding) {
     // content right or bot side position
     int content_end = sb.along(content_view_rect.position) + sb.along(content_view_rect.size);
 
-    bool too_low = pos < content_start + padding;
-    bool too_high = pos > content_end - padding;
+    bool too_low = pos < content_start + padding; // pos is above or left of the content view (with padding)
+    bool too_high = pos > content_end - padding; // pos is below or right of the content view (with padding)
     if (too_low || too_high) {
 
+        // If axis=X, padded_pos is the x pos to set the left of the content view rect to
+        // If axis=Y, padded_pos is the y pos to set the top of the content view rect to
         float padded_pos;
-        if (too_low) {
+
+        // When the view is zoomed in enough and the window is small enough, the position is show
+        // can be both too low and too high. If this is the case, just center it.
+        if (too_low && too_high) {
+            padded_pos = pos - (sb.along(content_view_rect.size) / 2.f);
+        }
+        else if (too_low) {
             padded_pos = pos - padding;
         }
         else if (too_high) {
             // The position of the content view to make the given pos appear near the right/bottom.
             // Subtract window height to move the position left/up.
-            padded_pos = (pos + padding) - sb.along(Constants::WINDOW_SIZE) / zoom;
+            padded_pos = (pos + padding) - sb.along(content_view_rect.size);
         }
 
         padded_pos = std::clamp(padded_pos, 0.f, sb.along(max_content_view_pos()));
@@ -93,7 +101,7 @@ void ScrollView::handle_window_resize() {
 
 void ScrollView::zoom_in() {
     zoom *= 1.15f;
-    zoom = std::min(zoom, 20.f);
+    zoom = std::min(zoom, 2.5f);
 
     zoomed_content_size = sf::Vector2i(content_size.x * zoom, content_size.y * zoom);
     handle_window_resize();

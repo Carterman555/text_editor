@@ -1,10 +1,9 @@
 Todo
-- add comments
-- scrolling to caret is messed up when zoomed in. Fix
+- Fix scroll_view::scroll_to_show_pos when zoomed in/out. Also make sure works when fully zoomed
+in and window is smallest size.
 
 Classes:
 
 
 
 Changes since last commit:
-- ctrl a

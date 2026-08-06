@@ -29,6 +29,7 @@ event_manager(window) {
 }
 
 void Screen::run_window() {
+
 	while (window.isOpen()) {
 		handle_events();
 
@@ -58,6 +59,14 @@ void Screen::handle_events() {
 			window.close();
 		}
 		else if (holds_alternative<WindowResized>(event)) {
+
+			sf::Vector2u new_window_size = window.getSize();
+
+			new_window_size.x = max(new_window_size.x, MIN_WINDOW_SIZE.x);
+			new_window_size.y = max(new_window_size.y, MIN_WINDOW_SIZE.y);
+
+			window.setSize(new_window_size);
+
 			scroll_view.handle_window_resize();
 		}
 		else if (holds_alternative<TypeChar>(event)) {
