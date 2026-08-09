@@ -21,7 +21,7 @@ public:
      */
     static sf::Vector2f find_text_area_size(const std::string& text);
 
-    // Filter out the characters that the text editor allows. Also handle return by using '\n'
-    // instead of '\r'.
-    static const std::optional<char32_t> get_valid_char(int unicode);
+    // Filter out the characters that the text editor allows. Return nullopt if the char is not a
+    // valid typable ASCII character. Also handle return by using '\n' instead of '\r'.
+    static const std::optional<char> filter_char(char c);
 };

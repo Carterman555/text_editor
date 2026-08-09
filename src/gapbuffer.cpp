@@ -1,6 +1,8 @@
 #include <iostream>
 #include "gapbuffer.hpp"
 
+#include <algorithm>
+#include <cassert>
 
 GapBuffer::GapBuffer(int init_gap_size) {
     this->init_gap_size = init_gap_size;
@@ -9,7 +11,10 @@ GapBuffer::GapBuffer(int init_gap_size) {
     gap_right = init_gap_size - 1;
 }
 
-void GapBuffer::insert(char32_t c, int position) {
+void GapBuffer::insert(char c, int position) {
+
+    assert(position >= 0 && position <= buffer.size());
+
     if (gap_left > gap_right) {
         buffer.insert(buffer.begin() + gap_left, init_gap_size, '\0');
         gap_right += init_gap_size;
@@ -44,13 +49,11 @@ void GapBuffer::remove(int position) {
 void GapBuffer::move_gap(int position) {
 
     bool move_left = position < gap_left;
-
     if (move_left) {
         int distance = gap_left - position;
 
-        // move the characters before the gap to after it
-        buffer.insert(buffer.begin() + gap_right + 1, buffer.begin() + position, buffer.begin() + gap_left);
-        buffer.erase(buffer.begin() + position, buffer.begin() + gap_left);
+        // move the gap to start at `position`
+        rotate(buffer.begin() + position, buffer.begin() + gap_left, buffer.begin() + gap_right + 1);
 
         gap_left = position;
         gap_right -= distance;

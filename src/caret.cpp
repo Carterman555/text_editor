@@ -78,12 +78,12 @@ sf::Vector2f Caret::move_down() {
 
     // Find the start of the next line
     int j = pos;
-    while (str[j] != '\n') {
+    while (j == str.size() || str[j] != '\n') {
 
         // If on the last line, move caret position to end of text
-        bool end_of_text = j >= str.length();
+        bool end_of_text = j >= str.size();
         if (end_of_text) {
-            pos = str.length();
+            pos = str.size();
 
             char_pos = update_shape_pos();
 
@@ -114,13 +114,18 @@ sf::Vector2f Caret::move_down() {
 
 sf::Vector2f Caret::move_up() {
 
+    if (pos == 0) {
+        return update_shape_pos();
+    }
+
     const string& str = buffer.get_display_str();
 
     // First get the pos_in_line, which is the horizontal position of the caret. It is the amount
     // of characters before the caret in the line.	
     int pos_in_line = 0;
     int i = pos;
-    while (i >= 0 && str[i - 1] != '\n') {
+
+    while (i > 0 && str[i - 1] != '\n') {
         pos_in_line++;
         i--;
 
@@ -147,7 +152,7 @@ sf::Vector2f Caret::move_up() {
     // Find the start of the previous line
     int j = pos - 1;
     bool on_cur_line = true;
-    while (on_cur_line || (str[j] != '\n' && j >= 0)) {
+    while (on_cur_line || (j >= 0 && str[j] != '\n')) {
 
         if (str[j] == '\n') {
             on_cur_line = false;

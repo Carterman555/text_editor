@@ -1,9 +1,7 @@
 Todo
-- Fix scroll_view::scroll_to_show_pos when zoomed in/out. Also make sure works when fully zoomed
-in and window is smallest size.
+- check if fixed `13. Pasting Windows text gives you double newlines` and continue fixing bugs
+
 
 Classes:
-
-
 
 Changes since last commit:

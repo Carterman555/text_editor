@@ -1,9 +1,10 @@
 #include <iostream>
+#include <typeinfo>
 
 #include "screen.hpp"
 #include "filehandler.hpp"
 #include "constants.hpp"
-
+ 
 using namespace Constants;
 
 Screen::Screen(const string& contents) : buffer(),
@@ -20,17 +21,20 @@ event_manager(window) {
 	text.setCharacterSize(FONT_SIZE);
 	text.setFillColor(sf::Color::White);
 
-	for (int i = 0; i < contents.size(); i++) {
-		buffer.insert(contents.at(i), i);
+	if (contains_non_ascii(contents)) {
+		// tinyfd_messageBox("Warning", "message", "ok", "warning", 1);
 	}
-	update_text();
 
+	type_sequence(contents);
+
+	caret.move(0);
 	caret.set_on_move([this](sf::Vector2f char_pos) {ensure_caret_visible(char_pos);});
 }
 
 void Screen::run_window() {
 
 	while (window.isOpen()) {
+
 		handle_events();
 
 		caret.update();
@@ -50,9 +54,21 @@ void Screen::run_window() {
 	}
 }
 
+bool Screen::contains_non_ascii(const string& str) {
+	for (char c : str) {
+		if (!Helpers::filter_char(c).has_value()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void Screen::handle_events() {
 
 	vector<Event> events = event_manager.poll_events();
+
+	bool mouse_in_text_area = !scroll_view.get_scroll_bar(Axis::X).mouse_in_scroll_area() &&
+		!scroll_view.get_scroll_bar(Axis::Y).mouse_in_scroll_area();
 
 	for (Event event : events) {
 		if (holds_alternative<WindowClosed>(event) || holds_alternative<Escape>(event)) {
@@ -91,19 +107,25 @@ void Screen::handle_events() {
 			}
 		}
 		else if (holds_alternative<SingleLeftClick>(event)) {
-			int pos = mouse_text_pos(get<SingleLeftClick>(event).position);
-			caret.move(pos);
+			if (mouse_in_text_area) {
+				int pos = mouse_text_pos(get<SingleLeftClick>(event).position);
+				caret.move(pos);
 
-			selection_start_index = caret.get_pos();
-			selection_box.clear();
+				selection_start_index = caret.get_pos();
+				selection_box.clear();
+			}
 		}
 		else if (holds_alternative<DoubleLeftClick>(event)) {
-			int pos = mouse_text_pos(get<DoubleLeftClick>(event).position);
-			select_group(pos);
+			if (mouse_in_text_area) {
+				int pos = mouse_text_pos(get<DoubleLeftClick>(event).position);
+				select_group(pos);
+			}
 		}
 		else if (holds_alternative<TripleLeftClick>(event)) {
-			int pos = mouse_text_pos(get<TripleLeftClick>(event).position);
-			select_line(pos);
+			if (mouse_in_text_area) {
+				int pos = mouse_text_pos(get<TripleLeftClick>(event).position);
+				select_line(pos);
+			}
 		}
 		else if (holds_alternative<LeftReleased>(event)) {
 			scroll_view.get_scroll_bar(Axis::X).stop_dragging_scroll_bar();
@@ -126,31 +148,23 @@ void Screen::handle_events() {
 		else if (holds_alternative<Backspace>(event)) {
 			if (selection_box.is_active()) {
 				delete_selection();
-				return;
 			}
+			else if (caret.get_pos() > 0) {
+				buffer.remove(caret.get_pos());
 
-			if (caret.get_pos() <= 0) {
-				return;
+				update_text();
+				caret.move_left();
 			}
-
-			buffer.remove(caret.get_pos());
-
-			update_text();
-			caret.move_left();
 		}
 		else if (holds_alternative<Delete>(event)) {
 			if (selection_box.is_active()) {
 				delete_selection();
-				return;
 			}
+			else if (caret.get_pos() < buffer.get_display_str().size()) {
+				buffer.remove(caret.get_pos() + 1);
 
-			if (caret.get_pos() >= buffer.get_display_str().size()) {
-				return;
+				update_text();
 			}
-
-			buffer.remove(caret.get_pos() + 1);
-
-			update_text();
 		}
 
 		handle_commands(event);
@@ -174,8 +188,11 @@ void Screen::select_group(int pos) {
 	unordered_set<char> letters_and_numbers = {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
 		'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-		'u', 'v', 'w', 'x', 'y', 'z', '_', '0', '1', '2',
-		'3', '4', '5', '6', '7', '8', '9'
+		'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+		'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+		'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+		'Y', 'Z', '_', '0', '1', '2', '3', '4', '5', '6',
+		'7', '8', '9'
 	};
 
 	unordered_set<char> symbols = {
@@ -196,12 +213,12 @@ void Screen::select_group(int pos) {
 
 	// find the index of the start and end of the selection
 	int start = pos;
-	while (start > 0 && char_set.contains(tolower(text.at(start - 1)))) {
+	while (start > 0 && char_set.contains(text.at(start - 1))) {
 		start--;
 	}
 
 	int end = pos;
-	while (end < text.length() && char_set.contains(tolower(text.at(end)))) {
+	while (end < text.length() && char_set.contains(text.at(end))) {
 		end++;
 	}
 
@@ -244,20 +261,8 @@ void Screen::handle_commands(const Event& event) {
 			delete_selection();
 		}
 
-		string clipboard = sf::Clipboard::getString();
-		for (int i = 0; i < clipboard.size(); i++) {
-			int unicode = clipboard.at(i);
-			if (auto c = Helpers::get_valid_char(unicode)) {
-				buffer.insert(*c, caret.get_pos() + i);
-			}
-			else {
-				buffer.insert(U'\uFFFD', caret.get_pos() + i);
-			}
-		}
-
-		update_text();
-
-		caret.move(caret.get_pos() + clipboard.size());
+		string clipboard = sf::Clipboard::getString().toAnsiString();
+		type_sequence(clipboard);
 	}
 	else if (holds_alternative<CtrlA>(event)) {
 		// select all text
@@ -322,7 +327,7 @@ void Screen::handle_arrow_keys(const Event& event) {
 	}
 }
 
-void Screen::type_char(char32_t c) {
+void Screen::type_char(char c) {
 
 	if (selection_box.is_active()) {
 		delete_selection();
@@ -334,7 +339,28 @@ void Screen::type_char(char32_t c) {
 	caret.move_right();
 }
 
+void Screen::type_sequence(const string& str) {
+	int inserted_count = 0;
+	for (int i = 0; i < str.size(); i++) {
 
+		// Windows uses '/r/n' for returns. `get_valid_char()` turns each of these into '\n'
+		// it should only insert one '\n'. To prevent this, check if the '/r/n' sequence
+		// occurs and skip the first '\n' if it does, so it only inserts one into the buffer.
+		bool this_char_is_CR = str.at(i) == 13;
+		bool next_char_is_LF = i + 1 < str.size() && str.at(i + 1) == 10;
+		if (this_char_is_CR && next_char_is_LF) {
+			continue;
+		}
+
+		if (auto c = Helpers::filter_char(str.at(i))) {
+			buffer.insert(str.at(i), caret.get_pos() + inserted_count);
+			inserted_count++;
+		}
+	}
+
+	update_text();
+	caret.move(caret.get_pos() + inserted_count);
+}
 
 void Screen::delete_selection() {
 

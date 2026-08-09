@@ -46,6 +46,8 @@ public:
     void set_content_size(sf::Vector2i size) {
         content_size = size;
         zoomed_content_size = sf::Vector2i(size.x * zoom, size.y * zoom);
+
+        ensure_view_within_bounds();
     }
 
     const sf::View& get_content_view() const { return content_view; }

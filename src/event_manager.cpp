@@ -41,7 +41,7 @@ std::vector<Event> EventManager::poll_events() {
             }
         }
         else if (const auto* text_entered = event->getIf<sf::Event::TextEntered>()) {
-            if (const auto c = Helpers::get_valid_char(text_entered->unicode)) {
+            if (const auto c = Helpers::filter_char(text_entered->unicode)) {
                 if (!ctrl_down) events.emplace_back(TypeChar(*c));
             }
         }

@@ -16,12 +16,9 @@ void SelectionBox::set_position(int start, int end) {
         return;
     }
 
-    this->start = start;
-    this->end = end;
-
     int str_len = buffer.get_display_str().size();
-    start = std::clamp(start, 0, str_len);
-    end = std::clamp(end, 0, str_len);
+    this->start = std::clamp(start, 0, str_len);
+    this->end = std::clamp(end, 0, str_len);
 
     if (start == end) {
         clear();

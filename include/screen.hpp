@@ -26,6 +26,9 @@ public:
 
 private:
 
+    // check whether the given string contains char values that the text editor does not support
+    bool contains_non_ascii(const string& str);
+
     void handle_events();
     void handle_commands(const Event& event);
     void handle_arrow_keys(const Event& event);
@@ -44,7 +47,10 @@ private:
     void select_line(int pos);
 
     // insert a character at the caret pos and move the caret pos right by one
-    void type_char(char32_t c);
+    void type_char(char c);
+
+    // type a sequence of characters at the caret given
+    void type_sequence(const string& str);
 
     void delete_selection();
 
@@ -61,7 +67,7 @@ private:
 
     /**
      * @brief calculate the char index of the mouse position
-     * 
+     *
      * @param local_mouse_pixel_pos Must be the mouse position relative to the top left corner of
      * the window. The global mouse position won't work.
      */
@@ -99,7 +105,7 @@ private:
     Caret caret;
 
     SelectionBox selection_box;
-    int selection_start_index;
+    int selection_start_index = 0;
 
     sf::RenderWindow window;
 

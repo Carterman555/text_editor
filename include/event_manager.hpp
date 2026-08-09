@@ -6,7 +6,7 @@
 
 struct WindowClosed {};
 struct WindowResized {};
-struct TypeChar { char32_t c; };
+struct TypeChar { char c; };
 struct MouseMoved { sf::Vector2i position; };
 struct LeftClick { sf::Vector2i position; };
 struct SingleLeftClick { sf::Vector2i position; };

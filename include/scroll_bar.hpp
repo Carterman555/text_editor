@@ -60,9 +60,11 @@ public:
 
     sf::Vector2f make_vec(float along, float across) const { return axis == Axis::X ? sf::Vector2f(along, across) : sf::Vector2f(across, along); }
 
+    // also true if mouse is in the scroll area padding
     bool mouse_in_scroll_area() const {
         return across(window.mapPixelToCoords(sf::Mouse::getPosition(window), view)) >= 0;
     }
+
     bool mouse_over_scroll_bar() const {
         sf::Vector2f mouse_pos = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 

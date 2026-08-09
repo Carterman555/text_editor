@@ -3,6 +3,7 @@
 
 #include <bits/c++io.h>
 #include <cmath>
+#include <iostream>
 
 #include "constants.hpp"
 
@@ -119,11 +120,11 @@ sf::Vector2f Helpers::find_text_area_size(const std::string& text) {
 	return size;
 }
 
-const std::optional<char32_t> Helpers::get_valid_char(int unicode) {
-	if (unicode == 9 || unicode == 10 || (unicode >= 32 && unicode < 127)) {
-		return (char32_t)unicode;
+const std::optional<char> Helpers::filter_char(char c) {
+	if (c == 9 || c == 10 || (c >= 32 && c < 127)) {
+		return c;
 	}
-	else if (unicode == 13) {
+	else if (c == 13) {
 		return '\n';
 	}
 	else {

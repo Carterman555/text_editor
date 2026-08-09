@@ -93,6 +93,11 @@ void ScrollView::set_scroll_bar_pos(Axis axis, int world_target_pos) {
 
 void ScrollView::handle_window_resize() {
     content_view_rect.size = sf::Vector2f(window.getSize().x / zoom, window.getSize().y / zoom);
+    
+    ensure_view_within_bounds();
+
+    // `ensure_view_within_bounds` runs `content_view = sf::View(content_view_rect)` so not needed
+    // here, but I'm keeping it in case `ensure_view_within_bounds` implementation changes
     content_view = sf::View(content_view_rect);
 
     horizontal_scroll_bar.update_viewport();

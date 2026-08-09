@@ -17,7 +17,7 @@ public:
      * @param c The character to insert
      * @param position Index to insert character at
      */
-    void insert(char32_t c, int position);
+    void insert(char c, int position);
 
     /**
      * @brief Remove a character at the position
