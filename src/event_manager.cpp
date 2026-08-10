@@ -47,6 +47,9 @@ std::vector<Event> EventManager::poll_events() {
         }
         else if (const auto* mouse_data = event->getIf<sf::Event::MouseMoved>()) {
             events.emplace_back(MouseMoved(mouse_data->position));
+
+            // double and triple clicks don't happen if the mouse moves between clicks
+            sequential_clicks = 0;
         }
         else if (const auto* mouse_data = event->getIf<sf::Event::MouseButtonPressed>()) {
             if (mouse_data->button == sf::Mouse::Button::Left) {

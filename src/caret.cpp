@@ -1,7 +1,9 @@
 
 #include <functional>
 #include <iostream>
+
 #include "caret.hpp"
+
 
 using namespace std;
 
@@ -13,11 +15,7 @@ sf::Vector2f Caret::move(int pos) {
 
     horizontal_pos = 0;
 
-    if (this->pos == pos) {
-        return char_pos;
-    }
-
-    this->pos = pos;
+    this->pos = clamp(pos, 0, (int)buffer.get_display_str().size());
 
     char_pos = update_shape_pos();
 

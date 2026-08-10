@@ -271,6 +271,7 @@ void Screen::handle_commands(const Event& event) {
 	else if (holds_alternative<CtrlA>(event)) {
 		// select all text
 		selection_box.set_position(0, buffer.get_display_str().size());
+		caret.move(buffer.get_display_str().size());
 	}
 	else if (holds_alternative<CtrlHyphen>(event)) {
 		scroll_view.zoom_out();
@@ -368,7 +369,7 @@ void Screen::type_sequence(const string& str) {
 
 void Screen::delete_selection() {
 
-	caret.move(selection_box.get_first());
+	sf::Vector2f char_pos = caret.move(selection_box.get_first());
 
 	// repeatedly remove the first character in the selection from the buffer. Since the element is
 	// removed, each loop iteration removes the next character in order.
@@ -379,4 +380,5 @@ void Screen::delete_selection() {
 	selection_box.clear();
 
 	update_text();
+	ensure_caret_visible(char_pos);
 }

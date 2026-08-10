@@ -1,5 +1,6 @@
 Todo
-- check if fixed `13. Pasting Windows text gives you double newlines` and continue fixing bugs
+- continue fixing bugs (tier 3 bugs)
+- create README and put project on portfolio
 
 
 Classes:
