@@ -10,6 +10,7 @@
 #include "scroll_view.hpp"
 #include "helpers.hpp"
 #include "event_manager.hpp"
+#include "warning_popup.hpp"
 
 using namespace std;
 
@@ -95,21 +96,23 @@ private:
 
     GapBuffer buffer;
 
-    sf::Font font;
+    sf::Font font{ (std::string)PROJECT_DIR + "/CONSOLA.TTF" };
 
     // Includes the whole text. If I want to optimize, then I would only include the visible
     // section of this text and move it based on the scroll. window.draw(text) is costly when
     // text is large.
-    sf::Text text;
+    sf::Text text{ font };
 
-    Caret caret;
+    Caret caret{ buffer };
 
-    SelectionBox selection_box;
+    SelectionBox selection_box{ buffer };
     int selection_start_index = 0;
 
-    sf::RenderWindow window;
+    sf::RenderWindow window{ sf::VideoMode(WINDOW_SIZE), "Text Editor" };
 
-    ScrollView scroll_view;
+    ScrollView scroll_view{ window };
 
-    EventManager event_manager;
+    EventManager event_manager{ window };
+
+    WarningPopup warning_popup;
 };

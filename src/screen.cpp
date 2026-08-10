@@ -4,25 +4,21 @@
 #include "screen.hpp"
 #include "filehandler.hpp"
 #include "constants.hpp"
- 
+
 using namespace Constants;
 
-Screen::Screen(const string& contents) : buffer(),
-font((std::string)PROJECT_DIR + "/CONSOLA.TTF"),
-text(font),
-caret(buffer),
-selection_box(buffer),
-window(sf::VideoMode(WINDOW_SIZE), "Text Editor"),
-scroll_view(window),
-event_manager(window) {
+Screen::Screen(const string& contents) {
 
 	window.setPosition({ 50, 50 });
+
+	window.setFramerateLimit(60);
 
 	text.setCharacterSize(FONT_SIZE);
 	text.setFillColor(sf::Color::White);
 
 	if (contains_non_ascii(contents)) {
-		// tinyfd_messageBox("Warning", "message", "ok", "warning", 1);
+		warning_popup.show("This text editor only handles ASCII characters. You are\ntrying to open a file containing non-ASCII characters.\nSaving this file will remove all non-ASCII characters.");
+		warning_popup.set_on_close([&]() { window.close(); });
 	}
 
 	type_sequence(contents);
@@ -36,6 +32,14 @@ void Screen::run_window() {
 	while (window.isOpen()) {
 
 		handle_events();
+
+		if (!window.isOpen()) {
+			break;
+		}
+
+		if (warning_popup.is_open()) {
+			warning_popup.display();
+		}
 
 		caret.update();
 		scroll_view.update();

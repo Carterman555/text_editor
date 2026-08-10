@@ -36,6 +36,7 @@ add_executable(main
     src/filehandler.cpp
     src/helpers.cpp
     src/event_manager.cpp
+    src/warning_popup.cpp
 )
 target_compile_features(main PRIVATE cxx_std_20)
 target_link_libraries(main PRIVATE SFML::Graphics)
