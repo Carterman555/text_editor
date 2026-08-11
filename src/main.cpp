@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
 	if (argc == 2) {
 		screen.set_on_save([argv](const std::string& contents) {
-			FileHandler::write_text_file(argv[1], contents);
+			FileHandler::write_text_file(std::filesystem::path(argv[1]), contents);
 			});
 	}
 

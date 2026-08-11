@@ -22,11 +22,3 @@ TEST(BufferTest, BasicInsert) {
 
   EXPECT_EQ(buffer.get_str(), "apples____");
 }
-
-TEST(BufferTest, BasicRemove) {
-
-  GapBuffer buffer(5);
-
-
-}
-

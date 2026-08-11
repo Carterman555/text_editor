@@ -2,6 +2,7 @@
 
 #include <string>
 #include <optional>
+#include <filesystem>
 
 class FileHandler {
 public:
@@ -13,5 +14,5 @@ public:
      *
      * @return whether successfully wrote to file
      */
-    static bool write_text_file(const std::string& file_path, const std::string& text);
+    static bool write_text_file(const std::filesystem::path& file_path, const std::string& text);
 };
