@@ -1,7 +1,7 @@
 #pragma once
 
-#include <bits/stdc++.h>
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 
 #include "scroll_bar.hpp"
 #include "constants.hpp"

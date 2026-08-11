@@ -1,13 +1,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <optional>
 
 #include "filehandler.hpp"
 
-std::optional<string> FileHandler::read_text_file(const string& file_path) {
+std::optional<std::string> FileHandler::read_text_file(const std::string& file_path) {
 
-    ifstream file(file_path);
+    std::ifstream file(file_path);
 
     if (!file.is_open()) {
         return std::nullopt;
@@ -20,11 +19,11 @@ std::optional<string> FileHandler::read_text_file(const string& file_path) {
     return contents;
 }
 
-bool FileHandler::write_text_file(const string& file_path, const string& text) {
-    fstream file(file_path, ios::out);
+bool FileHandler::write_text_file(const std::string& file_path, const std::string& text) {
+    std::fstream file(file_path, std::ios::out);
 
     if (!file.is_open()) {
-        cerr << "Error: Failed to open file (" << file_path << ")" << endl;
+        std::cerr << "Error: Failed to open file (" << file_path << ")" << std::endl;
         return false;
     }
 

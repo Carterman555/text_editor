@@ -1,5 +1,7 @@
 #include <iostream>
 #include <typeinfo>
+#include <unordered_set>
+#include <algorithm>
 
 #include "screen.hpp"
 #include "filehandler.hpp"
@@ -7,7 +9,7 @@
 
 using namespace Constants;
 
-Screen::Screen(const string& contents) {
+Screen::Screen(const std::string& contents) {
 
 	window.setPosition({ 50, 50 });
 
@@ -58,7 +60,7 @@ void Screen::run_window() {
 	}
 }
 
-bool Screen::contains_non_ascii(const string& str) {
+bool Screen::contains_non_ascii(const std::string& str) {
 	for (char c : str) {
 		if (!Helpers::filter_char(c).has_value()) {
 			return true;
@@ -69,7 +71,7 @@ bool Screen::contains_non_ascii(const string& str) {
 
 void Screen::handle_events() {
 
-	vector<Event> events = event_manager.poll_events();
+	std::vector<Event> events = event_manager.poll_events();
 
 	bool mouse_in_text_area = !scroll_view.get_scroll_bar(Axis::X).mouse_in_scroll_area() &&
 		!scroll_view.get_scroll_bar(Axis::Y).mouse_in_scroll_area();
@@ -79,11 +81,10 @@ void Screen::handle_events() {
 			window.close();
 		}
 		else if (holds_alternative<WindowResized>(event)) {
-
 			sf::Vector2u new_window_size = window.getSize();
 
-			new_window_size.x = max(new_window_size.x, MIN_WINDOW_SIZE.x);
-			new_window_size.y = max(new_window_size.y, MIN_WINDOW_SIZE.y);
+			new_window_size.x = std::max(new_window_size.x, MIN_WINDOW_SIZE.x);
+			new_window_size.y = std::max(new_window_size.y, MIN_WINDOW_SIZE.y);
 
 			window.setSize(new_window_size);
 
@@ -178,7 +179,7 @@ void Screen::handle_events() {
 
 void Screen::select_group(int pos) {
 
-	const string& text = buffer.get_display_str();
+	const std::string& text = buffer.get_display_str();
 
 	bool caret_at_end = pos >= text.length();
 	if (caret_at_end) {
@@ -189,7 +190,7 @@ void Screen::select_group(int pos) {
 	// the character after the caret determines the group to select
 	char char_after_caret = text.at(pos);
 
-	unordered_set<char> letters_and_numbers = {
+	std::unordered_set<char> letters_and_numbers = {
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
 		'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
 		'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
@@ -199,17 +200,17 @@ void Screen::select_group(int pos) {
 		'7', '8', '9'
 	};
 
-	unordered_set<char> symbols = {
+	std::unordered_set<char> symbols = {
 		'.', ',', ';', ':', '!', '?', '"', '\'', '(', ')', '[', ']', '{', '}',
 		'<', '>', '/', '\\', '|', '+', '-', '=', '*', '&', '%', '^', '~', '@',
 		'#', '$', '`'
 	};
 
-	unordered_set<char> whitespace = {
+	std::unordered_set<char> whitespace = {
 		' ', '\t'
 	};
 
-	unordered_set<char> char_set;
+	std::unordered_set<char> char_set;
 	if (letters_and_numbers.contains(char_after_caret)) char_set = letters_and_numbers;
 	else if (symbols.contains(char_after_caret)) char_set = symbols;
 	else if (whitespace.contains(char_after_caret)) char_set = whitespace;
@@ -226,15 +227,15 @@ void Screen::select_group(int pos) {
 		end++;
 	}
 
-	start = max(start, 0);
-	end = min(end, (int)text.length());
+	start = std::max(start, 0);
+	end = std::min(end, (int)text.length());
 
 	selection_box.set_position(start, end);
 	caret.move(end);
 }
 
 void Screen::select_line(int pos) {
-	const string& text = buffer.get_display_str();
+	const std::string& text = buffer.get_display_str();
 
 	int start = pos;
 	while (start > 0 && text.at(start - 1) != '\n') {
@@ -265,7 +266,7 @@ void Screen::handle_commands(const Event& event) {
 			delete_selection();
 		}
 
-		string clipboard = sf::Clipboard::getString().toAnsiString();
+		std::string clipboard = sf::Clipboard::getString().toAnsiString();
 		type_sequence(clipboard);
 	}
 	else if (holds_alternative<CtrlA>(event)) {
@@ -344,7 +345,7 @@ void Screen::type_char(char c) {
 	caret.move_right();
 }
 
-void Screen::type_sequence(const string& str) {
+void Screen::type_sequence(const std::string& str) {
 	int inserted_count = 0;
 	for (int i = 0; i < str.size(); i++) {
 

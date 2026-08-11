@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <string>
 
 class WarningPopup {
 public:

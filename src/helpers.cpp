@@ -1,14 +1,14 @@
 
 #include "helpers.hpp"
 
-#include <bits/c++io.h>
 #include <cmath>
 #include <iostream>
+#include <sstream>
+#include <algorithm>
 
 #include "constants.hpp"
 
 using namespace Constants;
-using namespace std;
 
 int Helpers::pos_to_char_index(const std::string& text, sf::Vector2f world_pos) {
 
@@ -73,13 +73,13 @@ int Helpers::pos_to_char_index(const std::string& text, sf::Vector2f world_pos) 
 	return line_start_index + char_index_in_line;
 }
 
-sf::Vector2f Helpers::char_index_to_pos(const std::string& text, ulong index) {
+sf::Vector2f Helpers::char_index_to_pos(const std::string& text, std::size_t index) {
 
-	index = min(text.size(), index);
+	index = std::min(text.size(), index);
 
 	sf::Vector2f world_pos = { 0, 0 };
 
-	for (ulong i = 0; i < index; i++) {
+	for (std::size_t i = 0; i < index; i++) {
 		if (text.at(i) == '\n') {
 			world_pos.x = 0;
 			world_pos.y += LINE_HEIGHT;

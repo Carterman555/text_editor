@@ -2,9 +2,10 @@
 
 #include "gapbuffer.hpp"
 
-#include <bits/stdc++.h>
 #include <vector>
+#include <memory>
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 
 /**
  * @brief The multicharacter selection. For example, when dragging mouse over text.
@@ -55,10 +56,6 @@ public:
 
     int get_last() {
         return std::max(start, end);
-    }
-
-    int is_reversed() {
-        return start > end;
     }
 
     bool is_active() {

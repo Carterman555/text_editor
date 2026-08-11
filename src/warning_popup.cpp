@@ -1,6 +1,8 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <optional>
+#include <algorithm>
 
 #include "warning_popup.hpp"
 

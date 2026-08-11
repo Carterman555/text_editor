@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+#include <string>
 #include <SFML/Graphics.hpp>
 
 class Helpers {
@@ -14,7 +16,7 @@ public:
      *
      * If `index` is out of range, the position of the end of the string is returned.
      */
-    static sf::Vector2f char_index_to_pos(const std::string& text, ulong index);
+    static sf::Vector2f char_index_to_pos(const std::string& text, std::size_t index);
 
     /**
      * @brief Find the size of the text area based on `text`, character widths, and line heights

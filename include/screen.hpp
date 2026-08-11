@@ -1,8 +1,8 @@
 #pragma once
 
-#include <bits/stdc++.h>
 #include <optional>
 #include <SFML/Graphics.hpp>
+#include <functional>
 
 #include "gapbuffer.hpp"
 #include "caret.hpp"
@@ -12,13 +12,11 @@
 #include "event_manager.hpp"
 #include "warning_popup.hpp"
 
-using namespace std;
-
 class Screen {
 public:
-    Screen(const string& contents = "");
+    Screen(const std::string& contents = "");
 
-    void set_on_save(std::function<void(const string&)> callback) {
+    void set_on_save(std::function<void(const std::string&)> callback) {
         on_save = callback;
     }
 
@@ -28,7 +26,7 @@ public:
 private:
 
     // check whether the given string contains char values that the text editor does not support
-    bool contains_non_ascii(const string& str);
+    bool contains_non_ascii(const std::string& str);
 
     void handle_events();
     void handle_commands(const Event& event);
@@ -51,7 +49,7 @@ private:
     void type_char(char c);
 
     // type a sequence of characters at the caret given
-    void type_sequence(const string& str);
+    void type_sequence(const std::string& str);
 
     void delete_selection();
 
@@ -78,13 +76,6 @@ private:
         return pos;
     }
 
-    int get_num_lines() {
-        const string& str = buffer.get_display_str();
-        int return_count = count(str.begin(), str.end(), '\n');
-        int num_lines = return_count + 1;
-        return num_lines;
-    }
-
     // scroll the screen to ensure the caret is visible in the scroll view (with padding)
     void ensure_caret_visible(sf::Vector2f char_pos) {
         sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
@@ -92,7 +83,7 @@ private:
         scroll_view.scroll_to_show_pos(char_center, padding);
     }
 
-    std::function<void(const string&)> on_save;
+    std::function<void(const std::string&)> on_save;
 
     GapBuffer buffer;
 

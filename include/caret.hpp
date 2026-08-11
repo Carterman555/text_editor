@@ -1,6 +1,8 @@
 #pragma once
 
+#include <functional>
 #include <SFML/Graphics.hpp>
+
 #include "gapbuffer.hpp"
 #include "constants.hpp"
 #include "helpers.hpp"

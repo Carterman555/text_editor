@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <algorithm>
 
 #include "scroll_bar.hpp"
 #include "scroll_view.hpp"

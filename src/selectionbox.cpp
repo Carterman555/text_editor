@@ -42,8 +42,6 @@ void SelectionBox::setup_shapes() {
     int first = std::min(start, end);
     int last = std::max(start, end);
 
-    int prev_start_str_index = first;
-
     int shape_index = 0;
 
     // the world length of the selection in the previous or current line
@@ -77,7 +75,6 @@ void SelectionBox::setup_shapes() {
 
             shape_index++;
 
-            prev_start_str_index = str_index + 1;
             line_selection_length = 0;
             line_char_pos.x = 0; // the selection always starts at the beginning of each new line
             line_char_pos.y += LINE_HEIGHT;

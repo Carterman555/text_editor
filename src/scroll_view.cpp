@@ -1,8 +1,8 @@
 #include <iostream>
+#include <format>
 
 #include "scroll_view.hpp"
 #include "logger.hpp"
-#include <format>
 
 using Constants::WINDOW_SIZE;
 

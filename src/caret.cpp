@@ -1,11 +1,7 @@
-
-#include <functional>
 #include <iostream>
+#include <algorithm>
 
 #include "caret.hpp"
-
-
-using namespace std;
 
 Caret::Caret(GapBuffer& buffer) : shape(sf::Vector2f(2, FONT_SIZE)), buffer(buffer) {
     shape.setPosition(TEXT_SHAPE_OFFSET);
@@ -15,7 +11,7 @@ sf::Vector2f Caret::move(int pos) {
 
     horizontal_pos = 0;
 
-    this->pos = clamp(pos, 0, (int)buffer.get_display_str().size());
+    this->pos = std::clamp(pos, 0, (int)buffer.get_display_str().size());
 
     char_pos = update_shape_pos();
 
@@ -55,7 +51,7 @@ sf::Vector2f Caret::move_right() {
 }
 
 sf::Vector2f Caret::move_down() {
-    const string& str = buffer.get_display_str();
+    const std::string& str = buffer.get_display_str();
 
     // First get the pos_in_line, which is the horizontal position of the caret. It is the amount
     // of characters before the caret in the line.	
@@ -116,7 +112,7 @@ sf::Vector2f Caret::move_up() {
         return update_shape_pos();
     }
 
-    const string& str = buffer.get_display_str();
+    const std::string& str = buffer.get_display_str();
 
     // First get the pos_in_line, which is the horizontal position of the caret. It is the amount
     // of characters before the caret in the line.	
@@ -164,7 +160,7 @@ sf::Vector2f Caret::move_up() {
     // this horizontal position, move the caret to the end of the line.
     for (int k = 0; k <= horizontal_pos; k++) {
         pos = previous_line_start_index + k;
-        if (pos > str.length() || str[pos] == '\n') {
+        if (pos >= str.length() || str[pos] == '\n') {
             break;
         }
     }
