@@ -71,6 +71,11 @@ private:
      * the window. The global mouse position won't work.
      */
     int mouse_text_pos(sf::Vector2i local_mouse_pixel_pos) {
+
+        // if (window.getViewport().size.x == 0 || window.getViewport(view).size.y == 0) {
+        //     return sf::Vector2i(0, 0);
+        // }
+
         sf::Vector2f mouse_pos = window.mapPixelToCoords(local_mouse_pixel_pos, scroll_view.get_content_view());
         int pos = Helpers::pos_to_char_index(buffer.get_display_str(), mouse_pos);
         return pos;

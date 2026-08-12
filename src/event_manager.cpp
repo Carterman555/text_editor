@@ -105,6 +105,8 @@ void EventManager::add_command_events(const sf::Event::KeyPressed* key_pressed, 
                 events.emplace_back(CtrlHyphen()); break;
             case sf::Keyboard::Scancode::Equal:
                 events.emplace_back(CtrlEqual()); break;
+            case sf::Keyboard::Scancode::T:
+                events.emplace_back(CtrlT()); break;
             default:
                 break;
         }

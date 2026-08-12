@@ -18,10 +18,17 @@ ScrollBar::ScrollBar(sf::RenderWindow& window, Axis axis) : window(window) {
 }
 
 void ScrollBar::start_dragging_scroll_bar() {
+
+    // to ensure `window.mapPixelToCoords(sf::Mouse::getPosition(window), view)` is not run because
+    // it causes division by 0 when the viewport size is 0.
+    if (window.getViewport(view).size.x == 0 && window.getViewport(view).size.y == 0) {
+        return;
+    }
+
     dragging = true;
     if (mouse_over_scroll_bar()) {
-        int mouse = along(window.mapPixelToCoords(sf::Mouse::getPosition(window), view));
-        drag_offset = along(shape.getPosition()) - mouse;
+        int mouse_pos = along(window.mapPixelToCoords(sf::Mouse::getPosition(window), view));
+        drag_offset = along(shape.getPosition()) - mouse_pos;
     }
     else {
         // set the offset so that the center of the scroll bar goes to the mouse position
@@ -30,6 +37,13 @@ void ScrollBar::start_dragging_scroll_bar() {
 }
 
 void ScrollBar::handle_dragging(ScrollView& scroll_view) {
+
+    // to ensure `window.mapPixelToCoords(sf::Mouse::getPosition(window), view)` is not run because
+    // it causes division by 0 when the viewport size is 0.
+    if (window.getViewport(view).size.x == 0 && window.getViewport(view).size.y == 0) {
+        return;
+    }
+
     if (dragging) {
         int mouse_pos = along(window.mapPixelToCoords(sf::Mouse::getPosition(window), view));
         scroll_view.set_scroll_bar_pos(axis, mouse_pos + drag_offset);
@@ -84,9 +98,13 @@ void ScrollBar::draw(float size_ratio, float pos_ratio) {
 }
 
 void ScrollBar::update_viewport() {
-    float width_ratio = (float)width / across(window.getSize());
-    float len_padding_ratio = (float)length_padding / along(window.getSize());
-    float width_padding_ratio = (float)width_padding / across(window.getSize());
+
+    float window_across = std::max(across(window.getSize()), 1.f);
+    float window_along = std::max(along(window.getSize()), 1.f);
+
+    float width_ratio = (float)width / window_across;
+    float len_padding_ratio = (float)length_padding / window_along;
+    float width_padding_ratio = (float)width_padding / window_across;
 
     sf::Vector2f pos = make_vec(len_padding_ratio, 1.f - width_ratio - width_padding_ratio);
     sf::Vector2f size = make_vec(1.f - (len_padding_ratio * 2), width_ratio);

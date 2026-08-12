@@ -62,17 +62,26 @@ public:
 
     // also true if mouse is in the scroll area padding
     bool mouse_in_scroll_area() const {
+
+        if (window.getViewport(view).size.x == 0 || window.getViewport(view).size.y == 0) {
+            return false;
+        }
+
         return across(window.mapPixelToCoords(sf::Mouse::getPosition(window), view)) >= 0;
     }
 
     bool mouse_over_scroll_bar() const {
+
+        if (window.getViewport(view).size.x == 0 || window.getViewport(view).size.y == 0) {
+            return false;
+        }
+
         sf::Vector2f mouse_pos = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 
         sf::FloatRect bounds = shape.getGlobalBounds();
         return shape.getGlobalBounds().contains(mouse_pos);
     }
 
-    sf::View get_view() const { return view; }
     bool is_dragging() const { return dragging; }
 
 private:

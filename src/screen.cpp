@@ -280,6 +280,9 @@ void Screen::handle_commands(const Event& event) {
 	else if (holds_alternative<CtrlEqual>(event)) {
 		scroll_view.zoom_in();
 	}
+	else if (holds_alternative<CtrlT>(event)) {
+		// for testing and debugging
+	}
 }
 
 void Screen::handle_arrow_keys(const Event& event) {

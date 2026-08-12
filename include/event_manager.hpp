@@ -31,6 +31,7 @@ struct CtrlV {};
 struct CtrlA {};
 struct CtrlHyphen {};
 struct CtrlEqual {};
+struct CtrlT {};
 
 struct ArrowKey { bool shift; sf::Keyboard::Scancode scancode; };
 
@@ -39,7 +40,7 @@ using Event = std::variant<
     MouseMoved, LeftClick, SingleLeftClick, DoubleLeftClick,
     TripleLeftClick, LeftReleased, MouseWheelScrolled,
     Escape, Backspace, Delete, CtrlS, CtrlC, CtrlV, CtrlA,
-    CtrlHyphen, CtrlEqual, ArrowKey
+    CtrlHyphen, CtrlEqual, CtrlT, ArrowKey
 >;
 
 class EventManager {
