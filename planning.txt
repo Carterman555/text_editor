@@ -1,5 +1,4 @@
 Todo
-- continue fixing bugs (tier 3 bugs)
 - create README and put project on portfolio
 
 

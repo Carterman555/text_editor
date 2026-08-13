@@ -14,16 +14,25 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
       - name: Build
         run: cmake --build build --config Release
+
+      - name: Show build output
+        run: ls -R build
+        shell: bash
+
       - name: Package (Unix)
         if: runner.os != 'Windows'
-        run: tar -czf editor-${{ runner.os }}.tar.gz -C build your-editor
+        run: tar -czf editor-${{ runner.os }}.tar.gz -C build/bin main
+
       - name: Package (Windows)
         if: runner.os == 'Windows'
-        run: Compress-Archive -Path build/Release/your-editor.exe -DestinationPath editor-Windows.zip
+        run: Compress-Archive -Path build/bin/Release/main.exe -DestinationPath editor-Windows.zip
+
       - uses: softprops/action-gh-release@v2
         with:
           files: |

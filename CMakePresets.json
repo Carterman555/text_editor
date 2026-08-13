@@ -12,6 +12,14 @@
                 "CMAKE_CXX_COMPILER": "/usr/bin/g++",
                 "CMAKE_BUILD_TYPE": "Debug"
             }
+        },
+        {
+            "name": "linux-gcc-release",
+            "inherits": "linux-gcc-debug",
+            "binaryDir": "${sourceDir}/out/build/linux-gcc-release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         }
     ]
 }
