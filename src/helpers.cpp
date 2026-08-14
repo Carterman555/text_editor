@@ -1,19 +1,16 @@
-
-#include "helpers.hpp"
-
 #include <cmath>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 
-#include "constants.hpp"
-
-using namespace Constants;
+#include "font_metrics.hpp"
+#include "helpers.hpp"
 
 int Helpers::pos_to_char_index(const std::string& text, sf::Vector2f world_pos) {
 
 	// Step 1: Get the line number, the start index of that line, and the size of the line
-	double target_line_d = std::max<double>(ceil(world_pos.y / LINE_HEIGHT), 1);
+	float line_height = FontMetrics::get().line_height;
+	double target_line_d = std::max<double>(ceil(world_pos.y / line_height), 1);
 	std::size_t target_line = static_cast<std::size_t>(target_line_d);
 
 	std::size_t cur_line = 1;
@@ -55,7 +52,7 @@ int Helpers::pos_to_char_index(const std::string& text, sf::Vector2f world_pos) 
 	for (char_index_in_line = 0; char_index_in_line < line_size; char_index_in_line++) {
 		int char_index = line_start_index + char_index_in_line;
 
-		int cur_char_width = text.at(char_index) == '\t' ? TAB_WIDTH : CHARACTER_WIDTH;
+		int cur_char_width = text.at(char_index) == '\t' ? FontMetrics::get().tab_width : FontMetrics::get().char_width;
 		current_x += cur_char_width;
 
 		if (current_x > world_pos.x + (cur_char_width / 2.f)) {
@@ -75,13 +72,13 @@ sf::Vector2f Helpers::char_index_to_pos(const std::string& text, std::size_t ind
 	for (std::size_t i = 0; i < index; i++) {
 		if (text.at(i) == '\n') {
 			world_pos.x = 0;
-			world_pos.y += LINE_HEIGHT;
+			world_pos.y += FontMetrics::get().line_height;
 		}
 		else if (text.at(i) == '\t') {
-			world_pos.x += TAB_WIDTH;
+			world_pos.x += FontMetrics::get().tab_width;
 		}
 		else {
-			world_pos.x += CHARACTER_WIDTH;
+			world_pos.x += FontMetrics::get().char_width;
 		}
 	}
 
@@ -89,20 +86,20 @@ sf::Vector2f Helpers::char_index_to_pos(const std::string& text, std::size_t ind
 }
 
 sf::Vector2f Helpers::find_text_area_size(const std::string& text) {
-	sf::Vector2f size = { 0, LINE_HEIGHT };
+	sf::Vector2f size = { 0, FontMetrics::get().line_height };
 
 	float current_width = 0;
 
 	for (size_t i = 0; i < text.size(); i++) {
 		if (text.at(i) == '\n') {
-			size.y += LINE_HEIGHT;
+			size.y += FontMetrics::get().line_height;
 			current_width = 0;
 		}
 		else if (text.at(i) == '\t') {
-			current_width += TAB_WIDTH;
+			current_width += FontMetrics::get().tab_width;
 		}
 		else {
-			current_width += CHARACTER_WIDTH;
+			current_width += FontMetrics::get().char_width;
 		}
 
 		if (current_width > size.x) {

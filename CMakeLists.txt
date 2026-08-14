@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_compile_definitions(PROJECT_DIR="${CMAKE_SOURCE_DIR}")
-
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -24,6 +22,14 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# Turn JetBrainsMono-Regular.ttf into a compilable C++ source file
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/JetBrainsMono-Regular.ttf" FONT_HEX HEX)
+string(REGEX REPLACE "(..)" "0x\\1," FONT_BYTES "${FONT_HEX}")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generated/font_data.cpp"
+"#include \"font_data.hpp\"\n"
+"const unsigned char JETBRAINS_TTF[] = { ${FONT_BYTES} };\n"
+"const unsigned int JETBRAINS_TTF_SIZE = sizeof(JETBRAINS_TTF);\n")
+
 add_executable(main
     src/main.cpp
     src/gapbuffer.cpp
@@ -37,6 +43,8 @@ add_executable(main
     src/helpers.cpp
     src/event_manager.cpp
     src/warning_popup.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/font_data.cpp
+    src/font_metrics.cpp
 )
 target_compile_features(main PRIVATE cxx_std_20)
 target_link_libraries(main PRIVATE SFML::Graphics)
@@ -53,7 +61,10 @@ target_link_libraries(
   buffer_test
   GTest::gtest_main
 )
-target_include_directories(buffer_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(buffer_test PRIVATE
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_BINARY_DIR}/generated
+)
 
 include(GoogleTest)
 gtest_discover_tests(buffer_test)

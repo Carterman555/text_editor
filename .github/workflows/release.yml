@@ -19,17 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Show checkout
-        run: ls -la
-        shell: bash
-
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             libx11-dev libxrandr-dev libxcursor-dev libxi-dev \
-            libudev-dev libgl1-mesa-dev libfreetype-dev \
+            libudescev-dev libgl1-mesa-dev libfreetype-dev \
             libopenal-dev libvorbis-dev libflac-dev
 
       - name: Configure

@@ -3,7 +3,7 @@
 
 #include "caret.hpp"
 
-Caret::Caret(GapBuffer& buffer) : shape(sf::Vector2f(2, FONT_SIZE)), buffer(buffer) {
+Caret::Caret(GapBuffer& buffer) : shape(sf::Vector2f(2, CHARACTER_SIZE)), buffer(buffer) {
     shape.setPosition(TEXT_SHAPE_OFFSET);
 }
 

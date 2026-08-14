@@ -41,7 +41,7 @@ private:
     static sf::ConvexShape rounded_rect(sf::Vector2f pos, sf::Vector2f size, float radius);
 
     sf::RenderWindow window;
-    sf::Font font{ (std::string)PROJECT_DIR + "/CONSOLA.TTF" };
+    sf::Font font;
     sf::Text text{ font };
     sf::Text title{ font };
 

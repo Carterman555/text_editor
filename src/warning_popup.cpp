@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "warning_popup.hpp"
+#include "font_data.hpp"
 
 namespace {
     constexpr unsigned WINDOW_WIDTH = 500;
@@ -40,6 +41,11 @@ namespace {
 }
 
 WarningPopup::WarningPopup() {
+
+    if (!font.openFromMemory(JETBRAINS_TTF, JETBRAINS_TTF_SIZE)) {
+        throw std::runtime_error("failed to open embedded font");
+    }
+
     text.setCharacterSize(13);
     text.setFillColor(MESSAGE_COLOR);
     text.setLineSpacing(1.4f);

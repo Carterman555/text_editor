@@ -7,7 +7,6 @@
 #include "constants.hpp"
 #include "helpers.hpp"
 
-
 using namespace Constants;
 
 /**

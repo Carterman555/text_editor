@@ -1,11 +1,11 @@
 #include <iostream>
 
 #include "selectionbox.hpp"
-#include "constants.hpp"
 #include "helpers.hpp"
 #include "logger.hpp"
+#include "font_metrics.hpp"
+#include "constants.hpp"
 
-using namespace Constants;
 
 SelectionBox::SelectionBox(GapBuffer& buffer) : buffer(buffer) {
 }
@@ -69,18 +69,18 @@ void SelectionBox::setup_shapes() {
                 shapes.push_back(std::make_unique<sf::RectangleShape>());
             }
 
-            shapes.at(shape_index)->setSize(sf::Vector2f(line_selection_length, FONT_SIZE));
-            shapes.at(shape_index)->setPosition(line_char_pos + TEXT_SHAPE_OFFSET);
+            shapes.at(shape_index)->setSize(sf::Vector2f(line_selection_length, Constants::CHARACTER_SIZE));
+            shapes.at(shape_index)->setPosition(line_char_pos + Constants::TEXT_SHAPE_OFFSET);
             shapes.at(shape_index)->setFillColor(sf::Color(103, 190, 217, 100));
 
             shape_index++;
 
             line_selection_length = 0;
             line_char_pos.x = 0; // the selection always starts at the beginning of each new line
-            line_char_pos.y += LINE_HEIGHT;
+            line_char_pos.y += FontMetrics::get().line_height;
         }
         else {
-            int cur_char_width = str.at(str_index) == '\t' ? TAB_WIDTH : CHARACTER_WIDTH;
+            int cur_char_width = str.at(str_index) == '\t' ? FontMetrics::get().tab_width : FontMetrics::get().char_width;
             line_selection_length += cur_char_width;
         }
     }

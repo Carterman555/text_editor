@@ -11,6 +11,7 @@
 #include "helpers.hpp"
 #include "event_manager.hpp"
 #include "warning_popup.hpp"
+#include "font_metrics.hpp"
 
 class Screen {
 public:
@@ -83,8 +84,11 @@ private:
 
     // scroll the screen to ensure the caret is visible in the scroll view (with padding)
     void ensure_caret_visible(sf::Vector2f char_pos) {
-        sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(CHARACTER_WIDTH / 2.f, LINE_HEIGHT / 2.f);
-        sf::Vector2f padding = { CHARACTER_WIDTH * 1.5f, LINE_HEIGHT * 2.5f };
+        float char_width = FontMetrics::get().char_width;
+        float line_height = FontMetrics::get().line_height;
+
+        sf::Vector2f char_center = char_pos + (TEXT_SHAPE_OFFSET / 2.f) + sf::Vector2f(char_width / 2.f, line_height / 2.f);
+        sf::Vector2f padding = { char_width * 1.5f, line_height * 2.5f };
         scroll_view.scroll_to_show_pos(char_center, padding);
     }
 
@@ -92,7 +96,7 @@ private:
 
     GapBuffer buffer;
 
-    sf::Font font{ (std::string)PROJECT_DIR + "/CONSOLA.TTF" };
+    sf::Font font;
 
     // Includes the whole text. If I want to optimize, then I would only include the visible
     // section of this text and move it based on the scroll. window.draw(text) is costly when

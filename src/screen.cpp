@@ -6,6 +6,7 @@
 #include "screen.hpp"
 #include "filehandler.hpp"
 #include "constants.hpp"
+#include "font_data.hpp"
 
 using namespace Constants;
 
@@ -15,7 +16,13 @@ Screen::Screen(const std::string& contents) {
 
 	window.setFramerateLimit(60);
 
-	text.setCharacterSize(FONT_SIZE);
+	if (!font.openFromMemory(JETBRAINS_TTF, JETBRAINS_TTF_SIZE)) {
+		throw std::runtime_error("failed to open embedded font");
+	}
+
+	FontMetrics::init(font, CHARACTER_SIZE);
+
+	text.setCharacterSize(CHARACTER_SIZE);
 	text.setFillColor(sf::Color::White);
 
 	if (contains_non_ascii(contents)) {
