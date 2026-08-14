@@ -17,12 +17,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/upload-artifact@v4
-        with:
-          name: editor-${{ runner.os }}
-          path: |
-            editor-*.tar.gz
-            editor-*.zip
+      - uses: actions/checkout@v7
 
       - name: Show checkout
         run: ls -la
@@ -38,7 +33,7 @@ jobs:
             libopenal-dev libvorbis-dev libflac-dev
 
       - name: Configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
 
       - name: Build
         run: cmake --build build --config Release
@@ -55,8 +50,10 @@ jobs:
         if: runner.os == 'Windows'
         run: Compress-Archive -Path build/bin/Release/main.exe -DestinationPath editor-Windows.zip
 
-      - uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
         with:
-          files: |
+          name: editor-${{ runner.os }}
+          path: |
             editor-*.tar.gz
             editor-*.zip
+          if-no-files-found: error
