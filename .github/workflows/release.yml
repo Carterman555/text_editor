@@ -40,10 +40,18 @@ jobs:
         if: runner.os == 'Windows'
         run: Copy-Item build/bin/Release/text-editor.exe -Destination text-editor-Windows.exe
 
-      - uses: softprops/action-gh-release@v2
+      - name: Release (Unix)
+        if: runner.os != 'Windows'
+        uses: softprops/action-gh-release@v2
         with:
-          files: |
-            text-editor-*.tar.gz
-            text-editor-Windows.exe
+          files: text-editor-${{ runner.os }}.tar.gz
+          draft: true
+          fail_on_unmatched_files: true
+
+      - name: Release (Windows)
+        if: runner.os == 'Windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: text-editor-Windows.exe
           draft: true
           fail_on_unmatched_files: true

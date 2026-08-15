@@ -14,16 +14,14 @@ Download the release file for your platform.
 
 You can open text-editor.exe directly without attaching it to a file. You can also open an existing
 text file by dragging it onto text-editor.exe or via "Open with".
+- Warning: the text editor only supports ASCII characters. Opening and saving a file that contains
+non-ASCII characters will remove the non-ASCII characters from that file.
 
 ### MacOS
 
-Warning: the build has not been tested on 
+Warning: The build has not been tested on MacOS. It may fail to open.
 
 ### Linux
-
-
-
-## Functionality
 
 Run `./text_editor` to open the text editor window.
 
@@ -31,13 +29,16 @@ Run `./text_editor` to open the text editor window.
 - Warning: the text editor only supports ASCII characters. Opening and saving a file that contains
 non-ASCII characters will remove the non-ASCII characters from that file.
 
+## Functionality
+
 You can type, delete, and select characters.
 
 Use the arrow keys to move the caret position.
 - `shift + arrow key` will select the text your caret moves through.
 
-Double clicking will select the word.
-Triple clicking will select the line.
+Double clicking will select the word. Triple clicking will select the line.
+
+
 
 ### Commands
 
