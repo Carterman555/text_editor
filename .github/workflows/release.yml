@@ -34,16 +34,16 @@ jobs:
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
-        run: tar -czf editor-${{ runner.os }}.tar.gz -C build/bin text-editor
+        run: tar -czf text-editor-${{ runner.os }}.tar.gz -C build/bin text-editor
 
       - name: Rename (Windows)
         if: runner.os == 'Windows'
-        run: Copy-Item build/bin/Release/text-editor.exe -Destination text-editor.exe
+        run: Copy-Item build/bin/Release/text-editor.exe -Destination text-editor-Windows.exe
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
-            text-editor.tar.gz
-            text-editor.exe
+            text-editor-*.tar.gz
+            text-editor-Windows.exe
           draft: true
           fail_on_unmatched_files: true

@@ -2,11 +2,26 @@
 ---
 This text editor was built from scratch using SFML.
 
+Warning: This program was built as a learning project and has not been properly tested on all
+platforms. To be safe, avoid opening any important documents with this text editor.
+
 ## Getting Started
 ---
 
-### Prerequisites:
-- 
+Download the release file for your platform.
+
+### Windows
+
+You can open text-editor.exe directly without attaching it to a file. You can also open an existing
+text file by dragging it onto text-editor.exe or via "Open with".
+
+### MacOS
+
+Warning: the build has not been tested on 
+
+### Linux
+
+
 
 ## Functionality
 
