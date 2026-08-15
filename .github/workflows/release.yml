@@ -1,9 +1,7 @@
 name: Release
 on:
   push:
-    branches: [main]
-    # tags: ['v*']
-
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -34,22 +32,18 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Show build output
-        run: ls -R build
-        shell: bash
-
       - name: Package (Unix)
         if: runner.os != 'Windows'
         run: tar -czf editor-${{ runner.os }}.tar.gz -C build/bin text-editor
 
-      - name: Package (Windows)
+      - name: Rename (Windows)
         if: runner.os == 'Windows'
-        run: Compress-Archive -Path build/bin/Release/text-editor.exe -DestinationPath editor-Windows.zip
+        run: Copy-Item build/bin/Release/text-editor.exe -Destination text-editor.exe
 
-      - uses: actions/upload-artifact@v4
+      - uses: softprops/action-gh-release@v2
         with:
-          name: editor-${{ runner.os }}
-          path: |
-            editor-*.tar.gz
-            editor-*.zip
-          if-no-files-found: error
+          files: |
+            text-editor.tar.gz
+            text-editor.exe
+          draft: true
+          fail_on_unmatched_files: true
