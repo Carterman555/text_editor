@@ -30,7 +30,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generated/font_data.cpp"
 "const unsigned char JETBRAINS_TTF[] = { ${FONT_BYTES} };\n"
 "const unsigned int JETBRAINS_TTF_SIZE = sizeof(JETBRAINS_TTF);\n")
 
-add_executable(main
+add_executable(text-editor
     src/main.cpp
     src/gapbuffer.cpp
     src/screen.cpp
@@ -46,9 +46,9 @@ add_executable(main
     ${CMAKE_CURRENT_BINARY_DIR}/generated/font_data.cpp
     src/font_metrics.cpp
 )
-target_compile_features(main PRIVATE cxx_std_20)
-target_link_libraries(main PRIVATE SFML::Graphics)
-target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_compile_features(text-editor PRIVATE cxx_std_20)
+target_link_libraries(text-editor PRIVATE SFML::Graphics)
+target_include_directories(text-editor PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 enable_testing()
 
@@ -69,4 +69,4 @@ target_include_directories(buffer_test PRIVATE
 include(GoogleTest)
 gtest_discover_tests(buffer_test)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT text-editor)

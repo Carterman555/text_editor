@@ -40,11 +40,11 @@ jobs:
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
-        run: tar -czf editor-${{ runner.os }}.tar.gz -C build/bin main
+        run: tar -czf editor-${{ runner.os }}.tar.gz -C build/bin text-editor
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
-        run: Compress-Archive -Path build/bin/Release/main.exe -DestinationPath editor-Windows.zip
+        run: Compress-Archive -Path build/bin/Release/text-editor.exe -DestinationPath editor-Windows.zip
 
       - uses: actions/upload-artifact@v4
         with:
